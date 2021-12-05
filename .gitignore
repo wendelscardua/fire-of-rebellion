@@ -1,0 +1,12 @@
+*.dbg
+*.nes
+*.o
+*.tiled-session
+data/*.inc
+map.txt
+src/irq_buffer.s
+src/main.s
+src/nametable_loader.s
+src/temp.s
+src/wram.s
+tools/ld65-map.json
