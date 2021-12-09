@@ -26,6 +26,8 @@
 #define ACCELERATION FP(0x00, 0x10)
 #define FRICTION FP(0x00, 0x06)
 
+#define MAX_ENTITIES 8
+
 typedef enum
   {
    Cutscene,
@@ -34,6 +36,17 @@ typedef enum
    Prompt
   } dungeon_mode_t;
 
+typedef enum
+  {
+   Fire,
+   Patrol
+  } entity_t;
+
+typedef struct
+{
+  unsigned char x;
+  unsigned char y;
+} patrol_coordinates_t;
 #pragma bss-name(push, "ZEROPAGE")
 
 unsigned char *current_room_ptr;
@@ -48,6 +61,12 @@ signed int player_dx, player_dy;
 direction_t player_direction;
 
 dungeon_mode_t current_dungeon_mode;
+
+unsigned char num_entities;
+entity_t entity_type[MAX_ENTITIES];
+signed int entity_x[MAX_ENTITIES], entity_y[MAX_ENTITIES];
+unsigned char num_entity_patrol_points[MAX_ENTITIES];
+patrol_coordinates_t (*entity_patrol_points[MAX_ENTITIES])[];
 
 const char empty_row[32] =
   {
@@ -80,6 +99,20 @@ void load_room(unsigned char *room_ptr) {
   current_room_ptr += 2;
   right_room_ptr = *(unsigned char **) current_room_ptr;
   current_room_ptr += 2;
+
+  num_entities = *current_room_ptr; ++current_room_ptr;
+  for(i = 0; i < num_entities; ++i) {
+    entity_type[i] = *current_room_ptr; ++current_room_ptr;
+    entity_x[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
+    entity_y[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
+    switch(entity_type[i]) {
+    case Patrol:
+      temp = num_entity_patrol_points[i] = *current_room_ptr; ++current_room_ptr;
+      entity_patrol_points[i] = (patrol_coordinates_t(*)[]) current_room_ptr;
+      current_room_ptr += (2 * temp);
+      break;
+    }
+  }
 
   set_unrle_buffer((unsigned char *) room_buffer);
   unrle_to_buffer(current_room_ptr);

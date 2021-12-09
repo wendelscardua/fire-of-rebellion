@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="16" height="12" tilewidth="16" tileheight="16" infinite="0" nextlayerid="3" nextobjectid="5">
  <tileset firstgid="1" source="metatiles.tsx"/>
  <layer id="1" name="Tile Layer 1" width="16" height="12">
   <data encoding="csv">
@@ -17,4 +17,12 @@
 2,2,2,4,2,2,2,1,1,2,2,2,2,4,2,2
 </data>
  </layer>
+ <objectgroup id="2" name="entities">
+  <object id="1" name="Fire" type="Fire" x="120" y="180.667">
+   <point/>
+  </object>
+  <object id="2" name="Fire" type="Fire" x="135.333" y="179.333">
+   <point/>
+  </object>
+ </objectgroup>
 </map>

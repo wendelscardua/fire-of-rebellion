@@ -12,6 +12,7 @@ gemfile do
   source 'https://rubygems.org'
 
   gem 'nokogiri'
+  gem 'pry'
 end
 
 require 'json'
@@ -27,9 +28,15 @@ class DungeonCompiler
   def process
     world = JSON.parse(File.read(@world_file))
     File.open(@output_file, 'wb') do |f|
-      f.puts '.segment "RODATA"'
-      f.puts '.export _starting_room'
-      f.puts "_starting_room: .word #{labelify(world['maps'].first['fileName'])}"
+      f.puts <<~"PREAMBLE"
+             .enum entity_type
+                Fire
+                Patrol
+             .endenum
+             .segment "RODATA"
+             .export _starting_room
+             _starting_room: .word #{labelify(world['maps'].first['fileName'])}
+      PREAMBLE
       world['maps'].each do |map_info|
         f.puts "#{labelify(map_info['fileName'])}:"
         # pointers for which map is up, down, left, right from here
@@ -72,8 +79,40 @@ class DungeonCompiler
     tmx_name.tr('-.', '__')
   end
 
+  def numberify(coordinate)
+    coordinate.to_f.round.to_i
+  end
+
+  def coalesce(coordinate)
+    (coordinate + 4) & ~0b111
+  end
+
   def read_tmx_file(tmx_file)
     document = Nokogiri::XML(File.read(tmx_file))
+
+    entity_payload = []
+
+    objects = document.xpath('//objectgroup/object')
+
+    entity_payload << objects.count
+
+    objects.each do |object|
+      entity_payload << "entity_type::#{object['type']}"
+      object_x = numberify(object['x']) - 8
+      object_y = numberify(object['y']) - 8
+      entity_payload << coalesce(object_x)
+      entity_payload << coalesce(object_y)
+      case object['type']
+      when 'Patrol'
+        points = object.xpath('//polygon').first['points'].split(/\s+/)
+        entity_payload << points.count
+        points.each do |point|
+          px, py = point.split(/,/).map { |pt| numberify(pt) }
+          entity_payload << (coalesce(object_x + px))
+          entity_payload << (coalesce(object_y + py))
+        end
+      end
+    end
 
     metatiles = document.xpath('//layer/data')
                         .text
@@ -81,8 +120,10 @@ class DungeonCompiler
                         .map { |t| t.to_i - 1 }
 
     rle_tiles = RLE.rle(metatiles)
-
-    ".byte #{rle_tiles.join(', ')}"
+    <<~"TMX_DATA"
+      .byte #{entity_payload.join(', ')}
+      .byte #{rle_tiles.join(', ')}
+    TMX_DATA
   end
 end
 
