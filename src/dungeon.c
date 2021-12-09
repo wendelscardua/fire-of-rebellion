@@ -65,6 +65,9 @@ dungeon_mode_t current_dungeon_mode;
 unsigned char num_entities;
 entity_t entity_type[MAX_ENTITIES];
 signed int entity_x[MAX_ENTITIES], entity_y[MAX_ENTITIES];
+signed int entity_dx[MAX_ENTITIES], entity_dy[MAX_ENTITIES];
+signed int entity_target_x[MAX_ENTITIES], entity_target_y[MAX_ENTITIES];
+direction_t entity_direction[MAX_ENTITIES];
 unsigned char num_entity_patrol_points[MAX_ENTITIES];
 patrol_coordinates_t (*entity_patrol_points[MAX_ENTITIES])[];
 
@@ -103,8 +106,10 @@ void load_room(unsigned char *room_ptr) {
   num_entities = *current_room_ptr; ++current_room_ptr;
   for(i = 0; i < num_entities; ++i) {
     entity_type[i] = *current_room_ptr; ++current_room_ptr;
-    entity_x[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
-    entity_y[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
+    entity_x[i] = entity_target_x[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
+    entity_y[i] = entity_target_y[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
+    entity_dx[i] = entity_dy[i] = entity_direction[i] = 0;
+
     switch(entity_type[i]) {
     case Patrol:
       temp = num_entity_patrol_points[i] = *current_room_ptr; ++current_room_ptr;
@@ -310,4 +315,20 @@ void dungeon_draw_sprites() {
     if ((INT(player_x) ^ INT(player_y)) & 0b01000) temp++;
   }
   oam_meta_spr(INT(player_x), INT(player_y) - 1, (const unsigned char *) metasprites_pointers[temp]);
+
+  for(i = 0; i < num_entities; i++) {
+    switch(entity_type[i]) {
+    case Fire:
+      oam_meta_spr(INT(entity_x[i]), INT(entity_y[i]) - 1, (const unsigned char *) metasprites_pointers[16]);
+      break;
+    case Patrol:
+      temp = 8 + 2 * entity_direction[i];
+      if (entity_dx[i] != 0 || entity_dy[i] != 0) {
+        if ((INT(entity_x[i]) ^ INT(entity_y[i])) & 0b01000) temp++;
+      }
+      oam_meta_spr(INT(entity_x[i]), INT(entity_y[i]) - 1, (const unsigned char *) metasprites_pointers[temp]);
+
+      break;
+    }
+  }
 }

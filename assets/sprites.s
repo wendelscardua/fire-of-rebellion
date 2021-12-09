@@ -173,6 +173,7 @@ metasprites_16_data:
 .export _metasprites_pointers
 _metasprites_pointers:
 
+; player (2 up, 2 down, 2 left, 2 right)
 .word metasprites_0_data
 .word metasprites_1_data
 .word metasprites_2_data
@@ -181,6 +182,7 @@ _metasprites_pointers:
 .word metasprites_5_data
 .word metasprites_6_data
 .word metasprites_7_data
+; patrol (2 up, 2 down, 2 left, 2 right)
 .word metasprites_8_data
 .word metasprites_9_data
 .word metasprites_10_data
@@ -189,4 +191,5 @@ _metasprites_pointers:
 .word metasprites_13_data
 .word metasprites_14_data
 .word metasprites_15_data
+; fire (fire)
 .word metasprites_16_data
