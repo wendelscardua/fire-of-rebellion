@@ -26,7 +26,7 @@
 #define ACCELERATION FP(0x00, 0x20)
 #define FRICTION FP(0x00, 0x10)
 
-#define MAX_ENTITIES 8
+#define MAX_ENTITIES 16
 
 typedef enum
   {
@@ -60,6 +60,7 @@ char room_buffer[240];
 signed int player_x, player_y;
 signed int player_dx, player_dy;
 direction_t player_direction;
+unsigned char player_lives, player_energy;
 
 dungeon_mode_t current_dungeon_mode;
 
@@ -68,9 +69,16 @@ entity_t entity_type[MAX_ENTITIES];
 signed int entity_x[MAX_ENTITIES], entity_y[MAX_ENTITIES];
 signed int entity_dx[MAX_ENTITIES], entity_dy[MAX_ENTITIES];
 signed int entity_target_x[MAX_ENTITIES], entity_target_y[MAX_ENTITIES];
+unsigned char entity_lives[MAX_ENTITIES];
 direction_t entity_direction[MAX_ENTITIES];
 unsigned char num_entity_patrol_points[MAX_ENTITIES];
 unsigned char entity_patrol_index[MAX_ENTITIES];
+
+#define MAX_PLAYER_FIRE 5
+signed int player_fire_x[MAX_PLAYER_FIRE], player_fire_y[MAX_PLAYER_FIRE];
+signed int player_fire_dx[MAX_PLAYER_FIRE], player_fire_dy[MAX_PLAYER_FIRE];
+direction_t player_fire_direction[MAX_PLAYER_FIRE];
+unsigned char player_fire_active[MAX_PLAYER_FIRE];
 
 const char empty_row[32] =
   {
@@ -81,6 +89,7 @@ const char empty_row[32] =
   };
 
 void load_room(unsigned char *room_ptr);
+void refresh_hud();
 
 void init_dungeon () {
   load_room((unsigned char*) starting_room);
@@ -89,7 +98,10 @@ void init_dungeon () {
   player_dx = 0x00;
   player_dy = 0x00;
   player_direction = Down;
+  player_lives = 3;
+  player_energy = 5;
   current_dungeon_mode = Moving;
+  refresh_hud();
 }
 
 void load_room(unsigned char *room_ptr) {
@@ -112,7 +124,11 @@ void load_room(unsigned char *room_ptr) {
     entity_dx[i] = entity_dy[i] = entity_direction[i] = entity_patrol_index[i] = 0;
 
     switch(entity_type[i]) {
+    case Fire:
+      entity_lives[i] = 0xff;
+      break;
     case Patrol:
+      entity_lives[i] = 0x01;
       temp = num_entity_patrol_points[i] = *current_room_ptr; ++current_room_ptr;
       entity_patrol_points[i] = (patrol_coordinates_t(*)[]) current_room_ptr;
       current_room_ptr += (2 * temp);
@@ -154,6 +170,10 @@ void load_room(unsigned char *room_ptr) {
     clear_vram_buffer();
   }
 
+  for(i = 0; i < MAX_PLAYER_FIRE; i++) {
+    player_fire_active[i] = 0;
+  }
+
   set_chr_mode_2(BG_MAIN_0);
   set_chr_mode_3(BG_MAIN_1);
   set_chr_mode_4(BG_MAIN_2);
@@ -165,6 +185,23 @@ void load_room(unsigned char *room_ptr) {
   ppu_on_all();
   set_scroll_y(0);
   pal_fade_to(0, 4);
+}
+
+void refresh_hud() {
+  for(i = 0; i < 3; i++) {
+    if (i < player_lives) {
+      one_vram_buffer(0x04, NTADR_C(8 + i, 1));
+    } else {
+      one_vram_buffer(0x00, NTADR_C(8 + i, 1));
+    }
+  }
+  for(i = 0; i < 5; i++) {
+    if (i < player_energy) {
+      one_vram_buffer(0x05, NTADR_C(8 + i, 2));
+    } else {
+      one_vram_buffer(0x00, NTADR_C(8 + i, 2));
+    }
+  }
 }
 
 unsigned char point_room_collision(unsigned char x, unsigned char y) {
@@ -249,6 +286,23 @@ void dungeon_moving_handler() {
     player_dx += ACCELERATION;
     if (player_dx > MAX_SPEED) {
       player_dx = MAX_SPEED;
+    }
+  }
+  if (pad1_new & PAD_A) {
+    if (player_energy > 0 && num_entities < MAX_ENTITIES) {
+      --player_energy;
+      refresh_hud();
+      // spawn new player fire
+      for(i = 0; i < MAX_PLAYER_FIRE; i++) {
+        if (!player_fire_active[i]) break;
+      }
+      if (i == MAX_PLAYER_FIRE) i = 0;
+      player_fire_x[i] = player_x + player_dx + FP(0x08, 0x00);
+      player_fire_y[i] = player_y + player_dy + FP(0x08, 0x00);
+      player_fire_dx[i] = 4 * player_dx;
+      player_fire_dy[i] = 4 * player_dy;
+      player_fire_direction[i] = player_direction;
+      player_fire_active[i] = 1;
     }
   }
 
@@ -354,6 +408,28 @@ void entities_handler() {
   }
 }
 
+void player_fire_handler() {
+  for(i = 0; i < MAX_PLAYER_FIRE; i++) {
+    if (!player_fire_active[i]) continue;
+
+    player_fire_x[i] += player_fire_dx[i];
+    player_fire_y[i] += player_fire_dy[i];
+
+    if (player_fire_x[i] < FP(0x10, 0x00) ||
+        player_fire_x[i] >= FP(0xf0, 0x00) ||
+        player_fire_y[i] < FP(0x10, 0x00) ||
+        player_fire_y[i] >= FP(0xb0, 0x00)) {
+      player_fire_active[i] = 0;
+      continue;
+    }
+
+    if (point_room_collision(INT(player_fire_x[i]), INT(player_fire_y[i]))) {
+      player_fire_active[i] = 0;
+      continue;
+    }
+  }
+}
+
 #define MENU_SCANLINE 0xc0
 
 void dungeon_handler() {
@@ -366,6 +442,7 @@ void dungeon_handler() {
   double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
 
   entities_handler();
+  player_fire_handler();
 
   pad_poll(0);
   pad1 = pad_state(0);
@@ -397,6 +474,24 @@ void dungeon_draw_sprites() {
       oam_meta_spr(INT(entity_x[i]), INT(entity_y[i]) - 1, (const unsigned char *) metasprites_pointers[temp]);
 
       break;
+    }
+  }
+  for(i = 0; i < MAX_PLAYER_FIRE; i++) {
+    if (player_fire_active[i]) {
+      switch(player_fire_direction[i]) {
+      case Up:
+        oam_spr(INT(player_fire_x[i]) - 4, INT(player_fire_y[i]) - 5, 0x60, 0x01);
+        break;
+      case Down:
+        oam_spr(INT(player_fire_x[i]) - 4, INT(player_fire_y[i]) - 5, 0x60, 0x01 | OAM_FLIP_V);
+        break;
+      case Left:
+        oam_spr(INT(player_fire_x[i]) - 4, INT(player_fire_y[i]) - 5, 0x50, 0x01 | OAM_FLIP_H);
+        break;
+      case Right:
+        oam_spr(INT(player_fire_x[i]) - 4, INT(player_fire_y[i]) - 5, 0x50, 0x01);
+        break;
+      }
     }
   }
 }
