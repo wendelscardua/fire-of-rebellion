@@ -299,8 +299,24 @@ void dungeon_moving_handler() {
       if (i == MAX_PLAYER_FIRE) i = 0;
       player_fire_x[i] = player_x + player_dx + FP(0x08, 0x00);
       player_fire_y[i] = player_y + player_dy + FP(0x08, 0x00);
-      player_fire_dx[i] = 4 * player_dx;
-      player_fire_dy[i] = 4 * player_dy;
+      switch(player_direction) {
+      case Up:
+        player_fire_dx[i] = 0;
+        player_fire_dy[i] = -4 * MAX_SPEED;
+        break;
+      case Down:
+        player_fire_dx[i] = 0;
+        player_fire_dy[i] = 4 * MAX_SPEED;
+        break;
+      case Left:
+        player_fire_dx[i] = -4 * MAX_SPEED;
+        player_fire_dy[i] = 0;
+        break;
+      case Right:
+        player_fire_dx[i] = 4 * MAX_SPEED;
+        player_fire_dy[i] = 0;
+        break;
+      }
       player_fire_direction[i] = player_direction;
       player_fire_active[i] = 1;
     }
