@@ -21,15 +21,32 @@
 #define SPRITE_0 4
 #define SPRITE_1 6
 
+#define MAX_SPEED FP(0x01, 0x20)
+#define ACCELERATION FP(0x00, 0x10)
+#define FRICTION FP(0x00, 0x06)
+
+typedef enum
+  {
+   Cutscene,
+   Moving,
+   Dialogue,
+   Prompt
+  } dungeon_mode_t;
+
 #pragma bss-name(push, "ZEROPAGE")
+
 unsigned char *current_room_ptr;
 unsigned char *up_room_ptr, *down_room_ptr, *left_room_ptr, *right_room_ptr;
+
 #pragma bss-name(pop)
+
 char room_buffer[240];
 
 signed int player_x, player_y;
 signed int player_dx, player_dy;
 direction_t player_direction;
+
+dungeon_mode_t current_dungeon_mode;
 
 const char empty_row[32] =
   {
@@ -48,6 +65,7 @@ void init_dungeon () {
   player_dx = 0x00;
   player_dy = 0x00;
   player_direction = Down;
+  current_dungeon_mode = Moving;
 }
 
 void load_room(unsigned char *room_ptr) {
@@ -107,6 +125,70 @@ void load_room(unsigned char *room_ptr) {
   pal_fade_to(0, 4);
 }
 
+void dungeon_moving_handler() {
+  if (pad1 & PAD_UP) {
+    player_dx = 0;
+    player_dy -= ACCELERATION;
+    player_direction = Up;
+    if (player_dy < -MAX_SPEED) {
+      player_dy = -MAX_SPEED;
+    }
+  }
+  if (pad1 & PAD_DOWN) {
+    player_dx = 0;
+    player_direction = Down;
+    player_dy += ACCELERATION;
+    if (player_dy > MAX_SPEED) {
+      player_dy = MAX_SPEED;
+    }
+  }
+  if (pad1 & PAD_LEFT) {
+    player_dy = 0;
+    player_dx -= ACCELERATION;
+    player_direction = Left;
+    if (player_dx < -MAX_SPEED) {
+      player_dx = -MAX_SPEED;
+    }
+  }
+  if (pad1 & PAD_RIGHT) {
+    player_dy = 0;
+    player_direction = Right;
+    player_dx += ACCELERATION;
+    if (player_dx > MAX_SPEED) {
+      player_dx = MAX_SPEED;
+    }
+  }
+
+
+  player_x += player_dx;
+  player_y += player_dy;
+
+  if (player_dy > 0) {
+    player_dy -= FRICTION;
+    if (player_dy < 0) {
+      player_dy = 0;
+    }
+  }
+  if (player_dy < 0) {
+    player_dy += FRICTION;
+    if (player_dy > 0) {
+      player_dy = 0;
+    }
+  }
+  if (player_dx > 0) {
+    player_dx -= FRICTION;
+    if (player_dx < 0) {
+      player_dx = 0;
+    }
+  }
+  if (player_dx < 0) {
+    player_dx += FRICTION;
+    if (player_dx > 0) {
+      player_dx = 0;
+    }
+  }
+}
+
 #define MENU_SCANLINE 0xc0
 
 void dungeon_handler() {
@@ -117,21 +199,32 @@ void dungeon_handler() {
   double_buffer[double_buffer_index++] = temp_int;
   double_buffer[double_buffer_index++] = 0;
   double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
+
+  pad_poll(0);
+  pad1 = pad_state(0);
+  pad1_new = get_pad_new(0);
+
+  switch(current_dungeon_mode) {
+  case Moving: dungeon_moving_handler(); break;
+  }
 }
+
+#define FAST_SPEED MAX_SPEED
+#define NORMAL_SPEED (MAX_SPEED / 4)
 
 void dungeon_draw_sprites() {
   // render player
   temp = 2 * player_direction;
-  if (player_dx >= FP(0x02, 0x00) ||
-      player_dx <= -FP(0x02, 0x00) ||
-      player_dy >= FP(0x02, 0x00) ||
-      player_dy <= -FP(0x02, 0x00)) {
+  if (player_dx >= FAST_SPEED ||
+      player_dx <= -FAST_SPEED ||
+      player_dy >= FAST_SPEED ||
+      player_dy <= -FAST_SPEED) {
     if (get_frame_count() & 0x04) temp++;
-  } else if (player_dx >= FP(0x01, 0x00) ||
-             player_dx <= -FP(0x01, 0x00) ||
-             player_dy >= FP(0x01, 0x00) ||
-             player_dy <= -FP(0x01, 0x00)) {
-    if (get_frame_count() & 0x10) temp++;
+  } else if (player_dx >= FP(0x00, 0x80) ||
+             player_dx <= -FP(0x00, 0x80) ||
+             player_dy >= FP(0x00, 0x80) ||
+             player_dy <= -FP(0x00, 0x80)) {
+    if (get_frame_count() & 0x08) temp++;
   }
   oam_meta_spr(INT(player_x), INT(player_y), (const unsigned char *) metasprites_pointers[temp]);
 }
