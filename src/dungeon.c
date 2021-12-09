@@ -125,6 +125,19 @@ void load_room(unsigned char *room_ptr) {
   pal_fade_to(0, 4);
 }
 
+unsigned char point_room_collision(unsigned char x, unsigned char y) {
+  temp_char = room_buffer[(y & 0xf0) | (x >> 4)];
+  // 0 is ground, 1 is front wall, 2 is top wall and 3 is iron bar
+  return (temp_char != 0);
+}
+
+unsigned char player_room_collision(unsigned char x, unsigned char y) {
+  return point_room_collision(x, y + 8) ||
+    point_room_collision(x + 15, y + 8) ||
+    point_room_collision(x, y + 15) ||
+    point_room_collision(x + 15, y + 15);
+}
+
 void dungeon_moving_handler() {
   if (pad1 & PAD_UP) {
     player_dx = 0;
@@ -159,9 +172,14 @@ void dungeon_moving_handler() {
     }
   }
 
-
   player_x += player_dx;
   player_y += player_dy;
+
+  if (player_room_collision(INT(player_x), INT(player_y))) {
+    player_x -= player_dx;
+    player_y -= player_dy;
+    player_dx = player_dy = 0;
+  }
 
   if (player_dy > 0) {
     player_dy -= FRICTION;
@@ -226,5 +244,5 @@ void dungeon_draw_sprites() {
              player_dy <= -FP(0x00, 0x80)) {
     if (get_frame_count() & 0x08) temp++;
   }
-  oam_meta_spr(INT(player_x), INT(player_y), (const unsigned char *) metasprites_pointers[temp]);
+  oam_meta_spr(INT(player_x), INT(player_y) - 1, (const unsigned char *) metasprites_pointers[temp]);
 }
