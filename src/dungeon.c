@@ -336,11 +336,15 @@ void entities_handler() {
       } else {
         entity_x[i] += entity_dx[i];
         entity_y[i] += entity_dy[i];
-        if ((entity_dx[i] > 0) == (entity_x[i] > entity_target_x[i])) {
+
+        if ((entity_dx[i] > 0 && entity_x[i] >= entity_target_x[i]) ||
+            (entity_dx[i] < 0 && entity_x[i] <= entity_target_x[i]) ) {
           entity_dx[i] = 0;
           entity_x[i] = entity_target_x[i];
         }
-        if ((entity_dy[i] > 0) == (entity_y[i] > entity_target_y[i])) {
+
+        if ((entity_dy[i] > 0 && entity_y[i] >= entity_target_y[i]) ||
+            (entity_dy[i] < 0 && entity_y[i] <= entity_target_y[i]) ) {
           entity_dy[i] = 0;
           entity_y[i] = entity_target_y[i];
         }
