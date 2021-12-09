@@ -39,7 +39,8 @@ typedef enum
 typedef enum
   {
    Fire,
-   Patrol
+   Patrol,
+   Fireball
   } entity_t;
 
 typedef struct
@@ -73,6 +74,7 @@ unsigned char entity_lives[MAX_ENTITIES];
 direction_t entity_direction[MAX_ENTITIES];
 unsigned char num_entity_patrol_points[MAX_ENTITIES];
 unsigned char entity_patrol_index[MAX_ENTITIES];
+unsigned char shooting_cooldown;
 
 #define MAX_PLAYER_FIRE 5
 signed int player_fire_x[MAX_PLAYER_FIRE], player_fire_y[MAX_PLAYER_FIRE];
@@ -100,6 +102,7 @@ void init_dungeon () {
   player_direction = Down;
   player_lives = 3;
   player_energy = 5;
+  shooting_cooldown = 0;
   current_dungeon_mode = Moving;
   refresh_hud();
 }
@@ -359,13 +362,54 @@ void dungeon_moving_handler() {
   }
 }
 
+unsigned char xm, ym;
+unsigned char unobstructed_line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2) {
+  if (x1 > x2) {
+    xm = x1;
+    x1 = x2;
+    x2 = xm;
+  }
+  if (y1 > y2) {
+    ym = y1;
+    y1 = y2;
+    y2 = ym;
+  }
+  if (x2 - x1 < 0x10) {
+    xm = (x2 - x1) / 2 + x1;
+    for(temp_y = y1; temp_y < y2; temp_y += 16) {
+      if (point_room_collision(xm, temp_y)) return 0;
+    }
+    return 1;
+  } else if (y2 - y1 < 0x10) {
+    ym = (y2 - y1) / 2 + y1;
+    for(temp_x = x1; temp_x < x2; temp_x += 16) {
+      if (point_room_collision(temp_x, ym)) return 0;
+    }
+    return 1;
+  }
+  return 0;
+}
+
 void entities_handler() {
   patrol_coordinates_t coordinates;
+
+  if (shooting_cooldown > 0) --shooting_cooldown;
 
   for (i = 0; i < num_entities; i++) {
     if (entity_lives[i] == 0) continue;
     switch (entity_type[i]) {
     case Fire:
+      break;
+    case Fireball:
+      entity_x[i] += entity_dx[i];
+      entity_y[i] += entity_dy[i];
+      if (entity_x[i] < FP(0x10, 0x00) ||
+          entity_x[i] >= FP(0xf0, 0x00) ||
+          entity_y[i] < FP(0x10, 0x00) ||
+          entity_y[i] >= FP(0xb0, 0x00) ||
+          point_room_collision(INT(entity_x[i]), INT(entity_y[i]))) {
+        entity_lives[i] = 0;
+      }
       break;
     case Patrol:
       if (entity_x[i] == entity_target_x[i] && entity_y[i] == entity_target_y[i]) {
@@ -420,7 +464,52 @@ void entities_handler() {
           entity_y[i] = entity_target_y[i];
         }
       }
-      break;
+
+      if (shooting_cooldown == 0 &&
+          num_entities < MAX_ENTITIES &&
+          ((get_frame_count() + i) & 0b011) == 0 &&
+          unobstructed_line(INT(player_x) + 8, INT(player_y) + 4, INT(entity_x[i]) + 8, INT(entity_y[i]) + 4)) {
+        shooting_cooldown = 24;
+        for(temp = 0; temp < num_entities; temp++) {
+          if (entity_lives[temp] == 0) break;
+        }
+        if (temp == num_entities) num_entities++;
+        entity_type[temp] = Fireball;
+        entity_lives[temp] = 0xff;
+        entity_x[temp] = entity_x[i] + 0x08;
+        entity_y[temp] = entity_y[i] + 0x08;
+        if (player_x > entity_x[i] + FP(0x20, 0x00)) {
+          entity_direction[temp] = Right;
+        } else if (player_x < entity_x[i] - FP(0x10, 0x00)) {
+          entity_direction[temp] = Left;
+        } else if (player_y > entity_y[i] + FP(0x20, 0x00)) {
+          entity_direction[temp] = Down;
+        } else if (player_y < entity_y[i] - FP(0x10, 0x00)) {
+          entity_direction[temp] = Up;
+        } else {
+          entity_direction[temp] = entity_direction[i];
+        }
+
+        switch(entity_direction[temp]) {
+        case Up:
+          entity_dx[temp] = 0;
+          entity_dy[temp] = -2 * MAX_SPEED;
+          break;
+        case Down:
+          entity_dx[temp] = 0;
+          entity_dy[temp] = 2 * MAX_SPEED;
+          break;
+        case Left:
+          entity_dx[temp] = -2 * MAX_SPEED;
+          entity_dy[temp] = 0;
+          break;
+        case Right:
+          entity_dx[temp] = 2 * MAX_SPEED;
+          entity_dy[temp] = 0;
+          break;
+        }
+        break;
+      }
     }
   }
 }
@@ -496,6 +585,22 @@ void dungeon_draw_sprites() {
     switch(entity_type[i]) {
     case Fire:
       oam_meta_spr(INT(entity_x[i]), INT(entity_y[i]) - 1, (const unsigned char *) metasprites_pointers[16]);
+      break;
+    case Fireball:
+      switch(entity_direction[i]) {
+      case Up:
+        oam_spr(INT(entity_x[i]) - 4, INT(entity_y[i]) - 5, 0x60, 0x01);
+        break;
+      case Down:
+        oam_spr(INT(entity_x[i]) - 4, INT(entity_y[i]) - 5, 0x60, 0x01 | OAM_FLIP_V);
+        break;
+      case Left:
+        oam_spr(INT(entity_x[i]) - 4, INT(entity_y[i]) - 5, 0x50, 0x01 | OAM_FLIP_H);
+        break;
+      case Right:
+        oam_spr(INT(entity_x[i]) - 4, INT(entity_y[i]) - 5, 0x50, 0x01);
+        break;
+      }
       break;
     case Patrol:
       temp = 8 + 2 * entity_direction[i];
