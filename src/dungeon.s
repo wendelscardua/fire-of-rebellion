@@ -10,7 +10,7 @@
 	.importzp	sp, sreg, regsave, regbank
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
-	.dbg		file, "src/dungeon.c", 10582, 1639078128
+	.dbg		file, "src/dungeon.c", 10582, 1639081300
 	.dbg		file, "src/lib/nesdoug.h", 6692, 1638718801
 	.dbg		file, "src/lib/neslib.h", 8949, 1638718801
 	.dbg		file, "src/lib/unrle.h", 125, 1638718801
@@ -2816,7 +2816,7 @@ L00AC:	adc     #<(_entity_dx)
 	tax
 	dey
 	lda     (ptr1),y
-	cmp     #$51
+	cmp     #$31
 	txa
 	sbc     #$00
 	bvs     L0016
@@ -2843,7 +2843,7 @@ L00AD:	adc     #<(_entity_dx)
 	tax
 	dey
 	lda     (ptr1),y
-	cmp     #$B0
+	cmp     #$D0
 	txa
 	sbc     #$FF
 	bvc     L0018
@@ -2870,7 +2870,7 @@ L00AE:	adc     #<(_entity_dy)
 	tax
 	dey
 	lda     (ptr1),y
-	cmp     #$51
+	cmp     #$31
 	txa
 	sbc     #$00
 	bvs     L0019
@@ -2897,7 +2897,7 @@ L00AF:	adc     #<(_entity_dy)
 	tax
 	dey
 	lda     (ptr1),y
-	cmp     #$B0
+	cmp     #$D0
 	txa
 	sbc     #$FF
 	bvc     L001A

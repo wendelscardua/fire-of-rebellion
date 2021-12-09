@@ -309,7 +309,7 @@ void entities_handler() {
         entity_target_y[i] = FP(coordinates.y, 0x00);
         entity_dx[i] = entity_target_x[i] - entity_x[i];
         entity_dy[i] = entity_target_y[i] - entity_y[i];
-#define MAX_PATROL_SPEED FP(0x01, 0x40)
+#define MAX_PATROL_SPEED FP(0x00, 0xC0)
         while(entity_dx[i] > MAX_PATROL_SPEED ||
               entity_dx[i] < -MAX_PATROL_SPEED ||
               entity_dy[i] > MAX_PATROL_SPEED ||
