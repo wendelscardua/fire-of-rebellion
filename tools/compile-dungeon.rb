@@ -93,7 +93,6 @@ class DungeonCompiler
 
   def read_tmx_file(tmx_file)
     document = Nokogiri::XML(File.read(tmx_file))
-
     entity_payload = []
 
     objects = document.xpath('//objectgroup/object')
@@ -106,25 +105,25 @@ class DungeonCompiler
       object_y = numberify(object['y']) - 8
       entity_payload << fmt(coalesce(object_x))
       entity_payload << fmt(coalesce(object_y))
-      case object['type']
-      when 'Patrol'
-        points = object.xpath('//polygon').first['points'].split(/\s+/)
-        entity_payload << points.count
-        points.each do |point|
-          px, py = point.split(/,/).map { |pt| numberify(pt) }
-          entity_payload << fmt(coalesce(object_x + px))
-          entity_payload << fmt(coalesce(object_y + py))
+        case object['type']
+        when 'Patrol'
+          points = object.xpath('./polygon').first['points'].split(/\s+/)
+          entity_payload << points.count
+          points.each do |point|
+            px, py = point.split(/,/).map { |pt| numberify(pt) }
+            entity_payload << fmt(coalesce(object_x + px))
+            entity_payload << fmt(coalesce(object_y + py))
+          end
         end
       end
-    end
 
-    metatiles = document.xpath('//layer/data')
-                        .text
-                        .scan(/\d+/)
-                        .map { |t| t.to_i - 1 }
+      metatiles = document.xpath('//layer/data')
+                          .text
+                          .scan(/\d+/)
+                          .map { |t| t.to_i - 1 }
 
-    rle_tiles = RLE.rle(metatiles)
-    <<~"TMX_DATA"
+      rle_tiles = RLE.rle(metatiles)
+      <<~"TMX_DATA"
       .byte #{entity_payload.join(', ')}
       .byte #{rle_tiles.join(', ')}
     TMX_DATA
