@@ -227,22 +227,11 @@ void dungeon_handler() {
   }
 }
 
-#define FAST_SPEED MAX_SPEED
-#define NORMAL_SPEED (MAX_SPEED / 4)
-
 void dungeon_draw_sprites() {
   // render player
   temp = 2 * player_direction;
-  if (player_dx >= FAST_SPEED ||
-      player_dx <= -FAST_SPEED ||
-      player_dy >= FAST_SPEED ||
-      player_dy <= -FAST_SPEED) {
-    if (get_frame_count() & 0x04) temp++;
-  } else if (player_dx >= FP(0x00, 0x80) ||
-             player_dx <= -FP(0x00, 0x80) ||
-             player_dy >= FP(0x00, 0x80) ||
-             player_dy <= -FP(0x00, 0x80)) {
-    if (get_frame_count() & 0x08) temp++;
+  if (player_dx != 0 || player_dy != 0) {
+    if ((INT(player_x) ^ INT(player_y)) & 0b01000) temp++;
   }
   oam_meta_spr(INT(player_x), INT(player_y) - 1, (const unsigned char *) metasprites_pointers[temp]);
 }
