@@ -169,13 +169,6 @@ void title_handler() {
       start_game();
       break;
     }
-#ifdef DEBUG
-    if (pad1_new & (PAD_SELECT)) {
-      sfx_play(SFX_START, 0);
-      go_to_game_over();
-      break;
-    }
-#endif
   }
 }
 

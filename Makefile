@@ -27,7 +27,8 @@ ${TARGET}: MMC3.cfg \
            assets/nametables.o \
            assets/palettes.o \
            assets/sprites.o \
-           assets/dialogs.o
+           assets/dialogs.o \
+           assets/dungeon.o
 	ld65 -C $^ nes.lib -m map.txt -o ${TARGET} ${LD65_FLAGS}
 
 %.o: %.s
@@ -80,8 +81,14 @@ assets/sprites.o: assets/sprites.s assets/sprites.h
 assets/dialogs.o: assets/dialogs.s assets/dialogs.h src/charmap.h
 	ca65 $< ${CA65_FLAGS}
 
+assets/dungeon.o: assets/dungeon.s
+	ca65 $< ${CA65_FLAGS}
+
 assets/dialogs.s: assets/dialogs.yaml tools/compile-dialogs.rb
 	ruby tools/compile-dialogs.rb $< $@
+
+assets/dungeon.s: assets/dungeon/* tools/compile-dungeon.rb
+	ruby tools/compile-dungeon.rb assets/dungeon/dungeon.world assets/dungeon.s
 
 src/music/soundtrack.s: src/music/soundtrack.txt
 	${TEXT2DATA} $^ -ca65 -allin
