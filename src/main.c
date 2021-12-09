@@ -121,6 +121,9 @@ void draw_sprites (void) {
   case Title:
     draw_title_sprites();
     break;
+  case Main:
+    dungeon_draw_sprites();
+    break;
   }
 }
 

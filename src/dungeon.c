@@ -2,12 +2,17 @@
 #include "lib/neslib.h"
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
+#include "directions.h"
 #include "irq_buffer.h"
 #include "temp.h"
 #include "../assets/palettes.h"
 #include "../assets/nametables.h"
 #include "../assets/metatiles.h"
+#include "../assets/sprites.h"
 #include "../assets/dungeon.h"
+
+#define FP(integer,fraction) (((integer)<<8)|((fraction)>>0))
+#define INT(unsigned_fixed_point) ((unsigned_fixed_point>>8)&0xff)
 
 #define BG_MAIN_0 0
 #define BG_MAIN_1 1
@@ -22,6 +27,10 @@ unsigned char *up_room_ptr, *down_room_ptr, *left_room_ptr, *right_room_ptr;
 #pragma bss-name(pop)
 char room_buffer[240];
 
+signed int player_x, player_y;
+signed int player_dx, player_dy;
+direction_t player_direction;
+
 const char empty_row[32] =
   {
    0, 0, 0, 0, 0, 0, 0, 0,
@@ -34,6 +43,11 @@ void load_room(unsigned char *room_ptr);
 
 void init_dungeon () {
   load_room((unsigned char*) starting_room);
+  player_x = FP(0x30, 0x00);
+  player_y = FP(0x40, 0x00);
+  player_dx = 0x00;
+  player_dy = 0x00;
+  player_direction = Down;
 }
 
 void load_room(unsigned char *room_ptr) {
@@ -103,4 +117,21 @@ void dungeon_handler() {
   double_buffer[double_buffer_index++] = temp_int;
   double_buffer[double_buffer_index++] = 0;
   double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
+}
+
+void dungeon_draw_sprites() {
+  // render player
+  temp = 2 * player_direction;
+  if (player_dx >= FP(0x02, 0x00) ||
+      player_dx <= -FP(0x02, 0x00) ||
+      player_dy >= FP(0x02, 0x00) ||
+      player_dy <= -FP(0x02, 0x00)) {
+    if (get_frame_count() & 0x04) temp++;
+  } else if (player_dx >= FP(0x01, 0x00) ||
+             player_dx <= -FP(0x01, 0x00) ||
+             player_dy >= FP(0x01, 0x00) ||
+             player_dy <= -FP(0x01, 0x00)) {
+    if (get_frame_count() & 0x10) temp++;
+  }
+  oam_meta_spr(INT(player_x), INT(player_y), (const unsigned char *) metasprites_pointers[temp]);
 }
