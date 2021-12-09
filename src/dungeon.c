@@ -443,6 +443,19 @@ void player_fire_handler() {
       player_fire_active[i] = 0;
       continue;
     }
+
+    for(temp = 0; temp < num_entities; temp++) {
+      if ((entity_lives[temp] > 0) &&
+          (entity_type[temp] != Fire) &&
+          (entity_x[temp] <= player_fire_x[i]) &&
+          (player_fire_x[i] < entity_x[temp] + FP(0x10, 0x00)) &&
+          (entity_y[temp] <= player_fire_y[i]) &&
+          (player_fire_y[i] < entity_y[temp] + FP(0x10, 0x00))) {
+        entity_lives[temp]--;
+        player_fire_active[i] = 0;
+        break;
+      }
+    }
   }
 }
 

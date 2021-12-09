@@ -10,7 +10,7 @@
 	.importzp	sp, sreg, regsave, regbank
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
-	.dbg		file, "src/dungeon.c", 13771, 1639089755
+	.dbg		file, "src/dungeon.c", 14226, 1639090104
 	.dbg		file, "src/lib/nesdoug.h", 6692, 1638718801
 	.dbg		file, "src/lib/neslib.h", 8949, 1638718801
 	.dbg		file, "src/lib/unrle.h", 125, 1638718801
@@ -367,7 +367,7 @@ _player_fire_active:
 ;
 ; double_buffer[double_buffer_index++] = MENU_SCANLINE - 1;
 ;
-	.dbg	line, "src/dungeon.c", 452
+	.dbg	line, "src/dungeon.c", 465
 	lda     _double_buffer_index
 	inc     _double_buffer_index
 	clc
@@ -382,7 +382,7 @@ _player_fire_active:
 ;
 ; double_buffer[double_buffer_index++] = 0xf6;
 ;
-	.dbg	line, "src/dungeon.c", 453
+	.dbg	line, "src/dungeon.c", 466
 	lda     _double_buffer_index
 	inc     _double_buffer_index
 	clc
@@ -396,7 +396,7 @@ _player_fire_active:
 ;
 ; double_buffer[double_buffer_index++] = 8;
 ;
-	.dbg	line, "src/dungeon.c", 454
+	.dbg	line, "src/dungeon.c", 467
 	lda     _double_buffer_index
 	inc     _double_buffer_index
 	clc
@@ -410,14 +410,14 @@ _player_fire_active:
 ;
 ; temp_int = 0x2000; // TODO: switch to dialogue
 ;
-	.dbg	line, "src/dungeon.c", 455
+	.dbg	line, "src/dungeon.c", 468
 	ldx     #$20
 	sty     _temp_int
 	stx     _temp_int+1
 ;
 ; double_buffer[double_buffer_index++] = temp_int;
 ;
-	.dbg	line, "src/dungeon.c", 456
+	.dbg	line, "src/dungeon.c", 469
 	lda     _double_buffer_index
 	inc     _double_buffer_index
 	clc
@@ -431,7 +431,7 @@ _player_fire_active:
 ;
 ; double_buffer[double_buffer_index++] = 0;
 ;
-	.dbg	line, "src/dungeon.c", 457
+	.dbg	line, "src/dungeon.c", 470
 	lda     _double_buffer_index
 	inc     _double_buffer_index
 	clc
@@ -445,7 +445,7 @@ _player_fire_active:
 ;
 ; double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
 ;
-	.dbg	line, "src/dungeon.c", 458
+	.dbg	line, "src/dungeon.c", 471
 	lda     _double_buffer_index
 	inc     _double_buffer_index
 	clc
@@ -462,53 +462,53 @@ _player_fire_active:
 ;
 ; entities_handler();
 ;
-	.dbg	line, "src/dungeon.c", 460
+	.dbg	line, "src/dungeon.c", 473
 	jsr     _entities_handler
 ;
 ; player_fire_handler();
 ;
-	.dbg	line, "src/dungeon.c", 461
+	.dbg	line, "src/dungeon.c", 474
 	jsr     _player_fire_handler
 ;
 ; pad_poll(0);
 ;
-	.dbg	line, "src/dungeon.c", 463
+	.dbg	line, "src/dungeon.c", 476
 	lda     #$00
 	jsr     _pad_poll
 ;
 ; pad1 = pad_state(0);
 ;
-	.dbg	line, "src/dungeon.c", 464
+	.dbg	line, "src/dungeon.c", 477
 	lda     #$00
 	jsr     _pad_state
 	sta     _pad1
 ;
 ; pad1_new = get_pad_new(0);
 ;
-	.dbg	line, "src/dungeon.c", 465
+	.dbg	line, "src/dungeon.c", 478
 	lda     #$00
 	jsr     _get_pad_new
 	sta     _pad1_new
 ;
 ; switch(current_dungeon_mode) {
 ;
-	.dbg	line, "src/dungeon.c", 467
+	.dbg	line, "src/dungeon.c", 480
 	lda     _current_dungeon_mode
 ;
 ; }
 ;
-	.dbg	line, "src/dungeon.c", 469
+	.dbg	line, "src/dungeon.c", 482
 	cmp     #$01
 	bne     L0003
 ;
 ; case Moving: dungeon_moving_handler(); break;
 ;
-	.dbg	line, "src/dungeon.c", 468
+	.dbg	line, "src/dungeon.c", 481
 	jmp     _dungeon_moving_handler
 ;
 ; }
 ;
-	.dbg	line, "src/dungeon.c", 470
+	.dbg	line, "src/dungeon.c", 483
 L0003:	rts
 
 	.dbg	line
@@ -529,14 +529,14 @@ L0003:	rts
 ;
 ; temp = 2 * player_direction;
 ;
-	.dbg	line, "src/dungeon.c", 474
+	.dbg	line, "src/dungeon.c", 487
 	lda     _player_direction
 	asl     a
 	sta     _temp
 ;
 ; if (player_dx != 0 || player_dy != 0) {
 ;
-	.dbg	line, "src/dungeon.c", 475
+	.dbg	line, "src/dungeon.c", 488
 	lda     _player_dx
 	ora     _player_dx+1
 	bne     L0057
@@ -546,7 +546,7 @@ L0003:	rts
 ;
 ; if ((INT(player_x) ^ INT(player_y)) & 0b01000) temp++;
 ;
-	.dbg	line, "src/dungeon.c", 476
+	.dbg	line, "src/dungeon.c", 489
 L0057:	lda     _player_x
 	ldx     _player_x+1
 	jsr     asrax4
@@ -563,7 +563,7 @@ L0057:	lda     _player_x
 ;
 ; oam_meta_spr(INT(player_x), INT(player_y) - 1, (const unsigned char *) metasprites_pointers[temp]);
 ;
-	.dbg	line, "src/dungeon.c", 478
+	.dbg	line, "src/dungeon.c", 491
 L0007:	jsr     decsp2
 	lda     _player_x
 	ldx     _player_x+1
@@ -599,7 +599,7 @@ L0045:	adc     #<(_metasprites_pointers)
 ;
 ; for(i = 0; i < num_entities; i++) {
 ;
-	.dbg	line, "src/dungeon.c", 480
+	.dbg	line, "src/dungeon.c", 493
 	lda     #$00
 	sta     _i
 L0058:	lda     _i
@@ -608,13 +608,13 @@ L0058:	lda     _i
 ;
 ; switch(entity_type[i]) {
 ;
-	.dbg	line, "src/dungeon.c", 481
+	.dbg	line, "src/dungeon.c", 494
 	ldy     _i
 	lda     _entity_type,y
 ;
 ; }
 ;
-	.dbg	line, "src/dungeon.c", 493
+	.dbg	line, "src/dungeon.c", 506
 	beq     L0010
 	cmp     #$01
 	beq     L0012
@@ -622,7 +622,7 @@ L0058:	lda     _i
 ;
 ; oam_meta_spr(INT(entity_x[i]), INT(entity_y[i]) - 1, (const unsigned char *) metasprites_pointers[16]);
 ;
-	.dbg	line, "src/dungeon.c", 483
+	.dbg	line, "src/dungeon.c", 496
 L0010:	jsr     decsp2
 	ldx     #$00
 	lda     _i
@@ -669,12 +669,12 @@ L0047:	adc     #<(_entity_y)
 ;
 ; break;
 ;
-	.dbg	line, "src/dungeon.c", 484
+	.dbg	line, "src/dungeon.c", 497
 	jmp     L0043
 ;
 ; temp = 8 + 2 * entity_direction[i];
 ;
-	.dbg	line, "src/dungeon.c", 486
+	.dbg	line, "src/dungeon.c", 499
 L0012:	ldy     _i
 	lda     _entity_direction,y
 	asl     a
@@ -684,7 +684,7 @@ L0012:	ldy     _i
 ;
 ; if (entity_dx[i] != 0 || entity_dy[i] != 0) {
 ;
-	.dbg	line, "src/dungeon.c", 487
+	.dbg	line, "src/dungeon.c", 500
 	ldx     #$00
 	lda     _i
 	asl     a
@@ -727,7 +727,7 @@ L0049:	adc     #<(_entity_dy)
 ;
 ; if ((INT(entity_x[i]) ^ INT(entity_y[i])) & 0b01000) temp++;
 ;
-	.dbg	line, "src/dungeon.c", 488
+	.dbg	line, "src/dungeon.c", 501
 L0017:	ldx     #$00
 L005E:	lda     _i
 	asl     a
@@ -772,7 +772,7 @@ L004B:	adc     #<(_entity_y)
 ;
 ; oam_meta_spr(INT(entity_x[i]), INT(entity_y[i]) - 1, (const unsigned char *) metasprites_pointers[temp]);
 ;
-	.dbg	line, "src/dungeon.c", 490
+	.dbg	line, "src/dungeon.c", 503
 L001A:	jsr     decsp2
 	ldx     #$00
 	lda     _i
@@ -834,13 +834,13 @@ L0043:	jsr     _oam_meta_spr
 ;
 ; for(i = 0; i < num_entities; i++) {
 ;
-	.dbg	line, "src/dungeon.c", 480
+	.dbg	line, "src/dungeon.c", 493
 L0059:	inc     _i
 	jmp     L0058
 ;
 ; for(i = 0; i < MAX_PLAYER_FIRE; i++) {
 ;
-	.dbg	line, "src/dungeon.c", 495
+	.dbg	line, "src/dungeon.c", 508
 L005A:	lda     #$00
 	sta     _i
 L005B:	lda     _i
@@ -849,25 +849,25 @@ L005B:	lda     _i
 ;
 ; }
 ;
-	.dbg	line, "src/dungeon.c", 513
+	.dbg	line, "src/dungeon.c", 526
 	rts
 ;
 ; if (player_fire_active[i]) {
 ;
-	.dbg	line, "src/dungeon.c", 496
+	.dbg	line, "src/dungeon.c", 509
 L0061:	ldy     _i
 	lda     _player_fire_active,y
 	jeq     L005C
 ;
 ; switch(player_fire_direction[i]) {
 ;
-	.dbg	line, "src/dungeon.c", 497
+	.dbg	line, "src/dungeon.c", 510
 	ldy     _i
 	lda     _player_fire_direction,y
 ;
 ; }
 ;
-	.dbg	line, "src/dungeon.c", 510
+	.dbg	line, "src/dungeon.c", 523
 	beq     L0025
 	cmp     #$01
 	beq     L0028
@@ -879,7 +879,7 @@ L0061:	ldy     _i
 ;
 ; oam_spr(INT(player_fire_x[i]) - 4, INT(player_fire_y[i]) - 5, 0x60, 0x01);
 ;
-	.dbg	line, "src/dungeon.c", 499
+	.dbg	line, "src/dungeon.c", 512
 L0025:	jsr     decsp3
 	ldx     #$00
 	lda     _i
@@ -929,12 +929,12 @@ L0050:	adc     #<(_player_fire_y)
 ;
 ; break;
 ;
-	.dbg	line, "src/dungeon.c", 500
+	.dbg	line, "src/dungeon.c", 513
 	jmp     L0060
 ;
 ; oam_spr(INT(player_fire_x[i]) - 4, INT(player_fire_y[i]) - 5, 0x60, 0x01 | OAM_FLIP_V);
 ;
-	.dbg	line, "src/dungeon.c", 502
+	.dbg	line, "src/dungeon.c", 515
 L0028:	jsr     decsp3
 	ldx     #$00
 	lda     _i
@@ -987,12 +987,12 @@ L0052:	adc     #<(_player_fire_y)
 ;
 ; break;
 ;
-	.dbg	line, "src/dungeon.c", 503
+	.dbg	line, "src/dungeon.c", 516
 	jmp     L0044
 ;
 ; oam_spr(INT(player_fire_x[i]) - 4, INT(player_fire_y[i]) - 5, 0x50, 0x01 | OAM_FLIP_H);
 ;
-	.dbg	line, "src/dungeon.c", 505
+	.dbg	line, "src/dungeon.c", 518
 L002B:	jsr     decsp3
 	ldx     #$00
 	lda     _i
@@ -1045,12 +1045,12 @@ L0054:	adc     #<(_player_fire_y)
 ;
 ; break;
 ;
-	.dbg	line, "src/dungeon.c", 506
+	.dbg	line, "src/dungeon.c", 519
 	jmp     L0044
 ;
 ; oam_spr(INT(player_fire_x[i]) - 4, INT(player_fire_y[i]) - 5, 0x50, 0x01);
 ;
-	.dbg	line, "src/dungeon.c", 508
+	.dbg	line, "src/dungeon.c", 521
 L002E:	jsr     decsp3
 	ldx     #$00
 	lda     _i
@@ -1104,7 +1104,7 @@ L0044:	jsr     _oam_spr
 ;
 ; for(i = 0; i < MAX_PLAYER_FIRE; i++) {
 ;
-	.dbg	line, "src/dungeon.c", 495
+	.dbg	line, "src/dungeon.c", 508
 L005C:	inc     _i
 	jmp     L005B
 
@@ -4503,21 +4503,21 @@ L0003:	jmp     incsp2
 	.dbg	line, "src/dungeon.c", 428
 	lda     #$00
 	sta     _i
-L0027:	lda     _i
+L0044:	lda     _i
 	cmp     #$05
-	bcc     L002D
+	bcc     L004E
 ;
 ; }
 ;
-	.dbg	line, "src/dungeon.c", 447
+	.dbg	line, "src/dungeon.c", 460
 	rts
 ;
 ; if (!player_fire_active[i]) continue;
 ;
 	.dbg	line, "src/dungeon.c", 429
-L002D:	ldy     _i
+L004E:	ldy     _i
 	lda     _player_fire_active,y
-	jeq     L002A
+	jeq     L004D
 ;
 ; player_fire_x[i] += player_fire_dx[i];
 ;
@@ -4525,10 +4525,10 @@ L002D:	ldy     _i
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L001D
+	bcc     L0030
 	inx
 	clc
-L001D:	adc     #<(_player_fire_x)
+L0030:	adc     #<(_player_fire_x)
 	tay
 	txa
 	adc     #>(_player_fire_x)
@@ -4548,10 +4548,10 @@ L001D:	adc     #<(_player_fire_x)
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L001E
+	bcc     L0031
 	inx
 	clc
-L001E:	adc     #<(_player_fire_dx)
+L0031:	adc     #<(_player_fire_dx)
 	sta     ptr1
 	txa
 	adc     #>(_player_fire_dx)
@@ -4579,10 +4579,10 @@ L001E:	adc     #<(_player_fire_dx)
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L001F
+	bcc     L0032
 	inx
 	clc
-L001F:	adc     #<(_player_fire_y)
+L0032:	adc     #<(_player_fire_y)
 	tay
 	txa
 	adc     #>(_player_fire_y)
@@ -4602,10 +4602,10 @@ L001F:	adc     #<(_player_fire_y)
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0020
+	bcc     L0033
 	inx
 	clc
-L0020:	adc     #<(_player_fire_dy)
+L0033:	adc     #<(_player_fire_dy)
 	sta     ptr1
 	txa
 	adc     #>(_player_fire_dy)
@@ -4633,10 +4633,10 @@ L0020:	adc     #<(_player_fire_dy)
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0021
+	bcc     L0034
 	inx
 	clc
-L0021:	adc     #<(_player_fire_x)
+L0034:	adc     #<(_player_fire_x)
 	sta     ptr1
 	txa
 	adc     #>(_player_fire_x)
@@ -4650,7 +4650,7 @@ L0021:	adc     #<(_player_fire_x)
 	sbc     #$04
 	bvc     L0009
 	eor     #$80
-L0009:	jmi     L002C
+L0009:	bmi     L0045
 ;
 ; player_fire_x[i] >= FP(0xf0, 0x00) ||
 ;
@@ -4658,10 +4658,10 @@ L0009:	jmi     L002C
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0022
+	bcc     L0035
 	inx
 	clc
-L0022:	adc     #<(_player_fire_x)
+L0035:	adc     #<(_player_fire_x)
 	sta     ptr1
 	txa
 	adc     #>(_player_fire_x)
@@ -4676,7 +4676,7 @@ L0022:	adc     #<(_player_fire_x)
 	sbc     #$3C
 	bvs     L000B
 	eor     #$80
-L000B:	jmi     L002C
+L000B:	bmi     L0045
 ;
 ; player_fire_y[i] < FP(0x10, 0x00) ||
 ;
@@ -4684,10 +4684,10 @@ L000B:	jmi     L002C
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0023
+	bcc     L0036
 	inx
 	clc
-L0023:	adc     #<(_player_fire_y)
+L0036:	adc     #<(_player_fire_y)
 	sta     ptr1
 	txa
 	adc     #>(_player_fire_y)
@@ -4702,7 +4702,7 @@ L0023:	adc     #<(_player_fire_y)
 	sbc     #$04
 	bvc     L000C
 	eor     #$80
-L000C:	bmi     L002C
+L000C:	bmi     L0045
 ;
 ; player_fire_y[i] >= FP(0xb0, 0x00)) {
 ;
@@ -4710,10 +4710,10 @@ L000C:	bmi     L002C
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0024
+	bcc     L0037
 	inx
 	clc
-L0024:	adc     #<(_player_fire_y)
+L0037:	adc     #<(_player_fire_y)
 	sta     ptr1
 	txa
 	adc     #>(_player_fire_y)
@@ -4728,18 +4728,31 @@ L0024:	adc     #<(_player_fire_y)
 	sbc     #$2C
 	bvs     L000D
 	eor     #$80
-L000D:	bmi     L002C
+L000D:	bmi     L0045
 	ldx     #$00
+	jmp     L0046
+;
+; player_fire_active[i] = 0;
+;
+	.dbg	line, "src/dungeon.c", 438
+L0045:	ldy     _i
+	lda     #$00
+	sta     _player_fire_active,y
+;
+; continue;
+;
+	.dbg	line, "src/dungeon.c", 439
+	jmp     L004D
 ;
 ; if (point_room_collision(INT(player_fire_x[i]), INT(player_fire_y[i]))) {
 ;
 	.dbg	line, "src/dungeon.c", 442
-	lda     _i
+L0046:	lda     _i
 	asl     a
-	bcc     L0025
+	bcc     L0038
 	inx
 	clc
-L0025:	adc     #<(_player_fire_x)
+L0038:	adc     #<(_player_fire_x)
 	sta     ptr1
 	txa
 	adc     #>(_player_fire_x)
@@ -4755,10 +4768,10 @@ L0025:	adc     #<(_player_fire_x)
 	ldx     #$00
 	lda     _i
 	asl     a
-	bcc     L0026
+	bcc     L0039
 	inx
 	clc
-L0026:	adc     #<(_player_fire_y)
+L0039:	adc     #<(_player_fire_y)
 	sta     ptr1
 	txa
 	adc     #>(_player_fire_y)
@@ -4772,20 +4785,254 @@ L0026:	adc     #<(_player_fire_y)
 	jsr     asrax2
 	jsr     _point_room_collision
 	tax
-	beq     L002A
+	beq     L0048
 ;
 ; player_fire_active[i] = 0;
 ;
 	.dbg	line, "src/dungeon.c", 443
-L002C:	ldy     _i
+	ldy     _i
 	lda     #$00
 	sta     _player_fire_active,y
+;
+; continue;
+;
+	.dbg	line, "src/dungeon.c", 444
+	jmp     L004D
+;
+; for(temp = 0; temp < num_entities; temp++) {
+;
+	.dbg	line, "src/dungeon.c", 447
+L0048:	sta     _temp
+L0049:	lda     _temp
+	cmp     _num_entities
+	jcs     L004D
+;
+; if ((entity_lives[temp] > 0) &&
+;
+	.dbg	line, "src/dungeon.c", 448
+	ldy     _temp
+	lda     _entity_lives,y
+	jeq     L004C
+;
+; (entity_type[temp] != Fire) &&
+;
+	.dbg	line, "src/dungeon.c", 449
+	ldy     _temp
+	lda     _entity_type,y
+	jeq     L004C
+;
+; (entity_x[temp] <= player_fire_x[i]) &&
+;
+	.dbg	line, "src/dungeon.c", 450
+	ldx     #$00
+	lda     _temp
+	asl     a
+	bcc     L003A
+	inx
+	clc
+L003A:	adc     #<(_entity_x)
+	sta     ptr1
+	txa
+	adc     #>(_entity_x)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     pushax
+	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L003B
+	inx
+	clc
+L003B:	adc     #<(_player_fire_x)
+	sta     ptr1
+	txa
+	adc     #>(_player_fire_x)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     tosicmp
+	beq     L0042
+	jpl     L004C
+;
+; (player_fire_x[i] < entity_x[temp] + FP(0x10, 0x00)) &&
+;
+	.dbg	line, "src/dungeon.c", 451
+L0042:	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L003C
+	inx
+	clc
+L003C:	adc     #<(_player_fire_x)
+	sta     ptr1
+	txa
+	adc     #>(_player_fire_x)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     pushax
+	ldx     #$00
+	lda     _temp
+	asl     a
+	bcc     L003D
+	inx
+	clc
+L003D:	adc     #<(_entity_x)
+	sta     ptr1
+	txa
+	adc     #>(_entity_x)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	pha
+	txa
+	clc
+	adc     #$04
+	tax
+	pla
+	jsr     tosicmp
+	jpl     L004C
+;
+; (entity_y[temp] <= player_fire_y[i]) &&
+;
+	.dbg	line, "src/dungeon.c", 452
+	ldx     #$00
+	lda     _temp
+	asl     a
+	bcc     L003E
+	inx
+	clc
+L003E:	adc     #<(_entity_y)
+	sta     ptr1
+	txa
+	adc     #>(_entity_y)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     pushax
+	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L003F
+	inx
+	clc
+L003F:	adc     #<(_player_fire_y)
+	sta     ptr1
+	txa
+	adc     #>(_player_fire_y)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     tosicmp
+	beq     L0043
+	bpl     L004C
+;
+; (player_fire_y[i] < entity_y[temp] + FP(0x10, 0x00))) {
+;
+	.dbg	line, "src/dungeon.c", 453
+L0043:	ldx     #$00
+	lda     _i
+	asl     a
+	bcc     L0040
+	inx
+	clc
+L0040:	adc     #<(_player_fire_y)
+	sta     ptr1
+	txa
+	adc     #>(_player_fire_y)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	jsr     pushax
+	ldx     #$00
+	lda     _temp
+	asl     a
+	bcc     L0041
+	inx
+	clc
+L0041:	adc     #<(_entity_y)
+	sta     ptr1
+	txa
+	adc     #>(_entity_y)
+	sta     ptr1+1
+	ldy     #$01
+	lda     (ptr1),y
+	tax
+	dey
+	lda     (ptr1),y
+	pha
+	txa
+	clc
+	adc     #$04
+	tax
+	pla
+	jsr     tosicmp
+	bpl     L004C
+;
+; entity_lives[temp]--;
+;
+	.dbg	line, "src/dungeon.c", 454
+	lda     #<(_entity_lives)
+	ldx     #>(_entity_lives)
+	clc
+	adc     _temp
+	bcc     L001C
+	inx
+L001C:	sta     sreg
+	stx     sreg+1
+	sta     ptr1
+	stx     ptr1+1
+	ldy     #$00
+	lda     (ptr1),y
+	sec
+	sbc     #$01
+	sta     (sreg),y
+;
+; player_fire_active[i] = 0;
+;
+	.dbg	line, "src/dungeon.c", 455
+	ldy     _i
+	lda     #$00
+	sta     _player_fire_active,y
+;
+; break;
+;
+	.dbg	line, "src/dungeon.c", 456
+	jmp     L004D
+;
+; for(temp = 0; temp < num_entities; temp++) {
+;
+	.dbg	line, "src/dungeon.c", 447
+L004C:	inc     _temp
+	jmp     L0049
 ;
 ; for(i = 0; i < MAX_PLAYER_FIRE; i++) {
 ;
 	.dbg	line, "src/dungeon.c", 428
-L002A:	inc     _i
-	jmp     L0027
+L004D:	inc     _i
+	jmp     L0044
 
 	.dbg	line
 .endproc
