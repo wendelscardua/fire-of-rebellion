@@ -24,11 +24,13 @@ ${TARGET}: MMC3.cfg \
            src/irq_buffer.o \
            src/temp.o \
            src/wram.o \
+           src/dungeon.o \
            assets/nametables.o \
            assets/palettes.o \
            assets/sprites.o \
            assets/dialogs.o \
-           assets/dungeon.o
+           assets/dungeon.o \
+           assets/metatiles.o
 	ld65 -C $^ nes.lib -m map.txt -o ${TARGET} ${LD65_FLAGS}
 
 %.o: %.s
@@ -63,6 +65,10 @@ src/wram.s: src/wram.c \
             src/lib/neslib.h
 	cc65 -Oirs $< --add-source ${CA65_FLAGS}
 
+src/dungeon.s: src/dungeon.c
+	cc65 -Oirs $< --add-source ${CA65_FLAGS}
+
+
 src/crt0.o: src/crt0.s src/mmc3/mmc3_code.asm src/lib/neslib.s src/lib/nesdoug.s assets/*.chr \
             src/music/soundtrack.s src/music/soundfx.s
 	ca65 $< ${CA65_FLAGS}
@@ -82,6 +88,9 @@ assets/dialogs.o: assets/dialogs.s assets/dialogs.h src/charmap.h
 	ca65 $< ${CA65_FLAGS}
 
 assets/dungeon.o: assets/dungeon.s
+	ca65 $< ${CA65_FLAGS}
+
+assets/metatiles.o: assets/metatiles.s
 	ca65 $< ${CA65_FLAGS}
 
 assets/dialogs.s: assets/dialogs.yaml tools/compile-dialogs.rb

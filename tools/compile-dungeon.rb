@@ -28,7 +28,8 @@ class DungeonCompiler
     world = JSON.parse(File.read(@world_file))
     File.open(@output_file, 'wb') do |f|
       f.puts '.segment "RODATA"'
-      f.puts "_starting_map: .word #{labelify(world['maps'].first['fileName'])}"
+      f.puts '.export _starting_room'
+      f.puts "_starting_room: .word #{labelify(world['maps'].first['fileName'])}"
       world['maps'].each do |map_info|
         f.puts "#{labelify(map_info['fileName'])}:"
         # pointers for which map is up, down, left, right from here

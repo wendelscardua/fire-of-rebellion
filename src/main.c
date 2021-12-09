@@ -12,6 +12,7 @@
 #include "nametable_loader.h"
 #include "temp.h"
 #include "wram.h"
+#include "dungeon.h"
 #include "../assets/nametables.h"
 #include "../assets/palettes.h"
 #include "../assets/sprites.h"
@@ -181,24 +182,6 @@ void start_game (void) {
     unseeded = 0;
   }
 
-  pal_fade_to(4, 0);
-  ppu_off();
-
-  pal_bg(bg_palette);
-  pal_spr(sprites_palette);
-
-  // draw some things
-  vram_adr(NTADR_A(0,0));
-  //vram_unrle(main_window_nametable);
-
-  set_chr_mode_2(BG_MAIN_0);
-  set_chr_mode_3(BG_MAIN_1);
-  set_chr_mode_4(BG_MAIN_2);
-  set_chr_mode_5(BG_MAIN_3);
-  set_chr_mode_0(SPRITE_0);
-  set_chr_mode_1(SPRITE_1);
-  ppu_on_all();
-
-  pal_fade_to(0, 4);
   current_game_state = Main;
+  init_dungeon();
 }

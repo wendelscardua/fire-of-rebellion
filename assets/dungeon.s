@@ -1,5 +1,6 @@
 .segment "RODATA"
-_starting_map: .word room_01_tmx
+.export _starting_room
+_starting_room: .word room_01_tmx
 room_01_tmx:
 .word room_03_tmx
 .word 0
