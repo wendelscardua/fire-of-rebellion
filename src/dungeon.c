@@ -3,6 +3,7 @@
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
 #include "directions.h"
+#include "dungeon.h"
 #include "irq_buffer.h"
 #include "temp.h"
 #include "../assets/palettes.h"
@@ -60,7 +61,7 @@ void load_room(unsigned char *room_ptr);
 
 void init_dungeon () {
   load_room((unsigned char*) starting_room);
-  player_x = FP(0x30, 0x00);
+  player_x = FP(0x80, 0x00); // TODO: back to 0x30
   player_y = FP(0x40, 0x00);
   player_dx = 0x00;
   player_dy = 0x00;
@@ -120,6 +121,8 @@ void load_room(unsigned char *room_ptr) {
   set_chr_mode_5(BG_MAIN_3);
   set_chr_mode_0(SPRITE_0);
   set_chr_mode_1(SPRITE_1);
+  oam_clear();
+  dungeon_draw_sprites();
   ppu_on_all();
   set_scroll_y(0);
   pal_fade_to(0, 4);
@@ -136,6 +139,44 @@ unsigned char player_room_collision(unsigned char x, unsigned char y) {
     point_room_collision(x + 15, y + 8) ||
     point_room_collision(x, y + 15) ||
     point_room_collision(x + 15, y + 15);
+}
+
+void victory() {
+  // player escaped dungeon, show victory screen
+}
+
+unsigned char exiting_room() {
+  temp_x = INT(player_x);
+  temp_y = INT(player_y);
+  if (temp_y < 0x08) {
+    player_y = FP(0xa0, 0x80);
+    if (up_room_ptr == 0) victory();
+    else load_room(up_room_ptr);
+    return 1;
+  }
+
+  if (temp_y >= 0xa8) {
+    player_y = FP(0x08, 0x80);
+    if (down_room_ptr == 0) victory();
+    else load_room(down_room_ptr);
+    return 1;
+  }
+
+  if (temp_x < 0x08) {
+    player_x = FP(0xef, 0x80);
+    if (left_room_ptr == 0) victory();
+    else load_room(left_room_ptr);
+    return 1;
+  }
+
+  if (temp_x >= 0xf0) {
+    player_x = FP(0x08, 0x80);
+    if (right_room_ptr == 0) victory();
+    else load_room(right_room_ptr);
+    return 1;
+  }
+
+  return 0;
 }
 
 void dungeon_moving_handler() {
@@ -174,6 +215,8 @@ void dungeon_moving_handler() {
 
   player_x += player_dx;
   player_y += player_dy;
+
+  if (exiting_room()) return;
 
   if (player_room_collision(INT(player_x), INT(player_y))) {
     player_x -= player_dx;
