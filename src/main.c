@@ -31,6 +31,9 @@
 
 // GLOBAL VARIABLES
 unsigned char unseeded;
+#ifdef DEBUG
+unsigned char gray_line_enabled;
+#endif
 
 // Game stuff
 enum game_state {
@@ -95,6 +98,11 @@ void main (void) {
       break;
     }
 
+#ifdef DEBUG
+    if (pad1_new & PAD_SELECT) gray_line_enabled = !gray_line_enabled;
+    if (gray_line_enabled) gray_line();
+#endif
+
     // load the irq array with values it parse
     // ! CHANGED it, double buffered so we aren't editing the same
     // array that the irq system is reading from
@@ -104,6 +112,10 @@ void main (void) {
 
     draw_sprites();
 
+#ifdef DEBUG
+    if (gray_line_enabled) gray_line();
+#endif
+
     // wait till the irq system is done before changing it
     // this could waste a lot of CPU time, so we do it last
     while(!is_irq_done() ){}
@@ -111,6 +123,10 @@ void main (void) {
     // copy from double_buffer to the irq_array
     // memcpy(void *dst,void *src,unsigned int len);
     memcpy(irq_array, double_buffer, sizeof(irq_array));
+
+#ifdef DEBUG
+    if (gray_line_enabled) gray_line();
+#endif
   }
 }
 
