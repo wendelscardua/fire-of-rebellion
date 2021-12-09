@@ -87,6 +87,10 @@ class DungeonCompiler
     (coordinate + 4) & ~0b111
   end
 
+  def fmt(byte)
+    format('$%02x', byte)
+  end
+
   def read_tmx_file(tmx_file)
     document = Nokogiri::XML(File.read(tmx_file))
 
@@ -100,16 +104,16 @@ class DungeonCompiler
       entity_payload << "entity_type::#{object['type']}"
       object_x = numberify(object['x']) - 8
       object_y = numberify(object['y']) - 8
-      entity_payload << coalesce(object_x)
-      entity_payload << coalesce(object_y)
+      entity_payload << fmt(coalesce(object_x))
+      entity_payload << fmt(coalesce(object_y))
       case object['type']
       when 'Patrol'
         points = object.xpath('//polygon').first['points'].split(/\s+/)
         entity_payload << points.count
         points.each do |point|
           px, py = point.split(/,/).map { |pt| numberify(pt) }
-          entity_payload << (coalesce(object_x + px))
-          entity_payload << (coalesce(object_y + py))
+          entity_payload << fmt(coalesce(object_x + px))
+          entity_payload << fmt(coalesce(object_y + py))
         end
       end
     end

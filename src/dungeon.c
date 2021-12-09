@@ -12,8 +12,8 @@
 #include "../assets/sprites.h"
 #include "../assets/dungeon.h"
 
-#define FP(integer,fraction) (((integer)<<8)|((fraction)>>0))
-#define INT(unsigned_fixed_point) ((unsigned_fixed_point>>8)&0xff)
+#define FP(integer,fraction) (((integer)<<6)|((fraction)>>2))
+#define INT(unsigned_fixed_point) ((unsigned_fixed_point>>6)&0xff)
 
 #define BG_MAIN_0 0
 #define BG_MAIN_1 1
@@ -23,8 +23,8 @@
 #define SPRITE_1 6
 
 #define MAX_SPEED FP(0x01, 0x20)
-#define ACCELERATION FP(0x00, 0x10)
-#define FRICTION FP(0x00, 0x06)
+#define ACCELERATION FP(0x00, 0x20)
+#define FRICTION FP(0x00, 0x10)
 
 #define MAX_ENTITIES 8
 
@@ -51,6 +51,7 @@ typedef struct
 
 unsigned char *current_room_ptr;
 unsigned char *up_room_ptr, *down_room_ptr, *left_room_ptr, *right_room_ptr;
+patrol_coordinates_t (*entity_patrol_points[MAX_ENTITIES])[];
 
 #pragma bss-name(pop)
 
@@ -69,7 +70,7 @@ signed int entity_dx[MAX_ENTITIES], entity_dy[MAX_ENTITIES];
 signed int entity_target_x[MAX_ENTITIES], entity_target_y[MAX_ENTITIES];
 direction_t entity_direction[MAX_ENTITIES];
 unsigned char num_entity_patrol_points[MAX_ENTITIES];
-patrol_coordinates_t (*entity_patrol_points[MAX_ENTITIES])[];
+unsigned char entity_patrol_index[MAX_ENTITIES];
 
 const char empty_row[32] =
   {
@@ -108,7 +109,7 @@ void load_room(unsigned char *room_ptr) {
     entity_type[i] = *current_room_ptr; ++current_room_ptr;
     entity_x[i] = entity_target_x[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
     entity_y[i] = entity_target_y[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
-    entity_dx[i] = entity_dy[i] = entity_direction[i] = 0;
+    entity_dx[i] = entity_dy[i] = entity_direction[i] = entity_patrol_index[i] = 0;
 
     switch(entity_type[i]) {
     case Patrol:
@@ -288,6 +289,67 @@ void dungeon_moving_handler() {
   }
 }
 
+void entities_handler() {
+  patrol_coordinates_t coordinates;
+
+  for (i = 0; i < num_entities; i++) {
+    switch (entity_type[i]) {
+    case Fire:
+      break;
+    case Patrol:
+      if (entity_x[i] == entity_target_x[i] && entity_y[i] == entity_target_y[i]) {
+        temp = entity_patrol_index[i];
+        ++temp;
+        if (temp >= num_entity_patrol_points[i]) {
+          temp = 0;
+        }
+        entity_patrol_index[i] = temp;
+        coordinates = (*entity_patrol_points[i])[temp];
+        entity_target_x[i] = FP(coordinates.x, 0x00);
+        entity_target_y[i] = FP(coordinates.y, 0x00);
+        entity_dx[i] = entity_target_x[i] - entity_x[i];
+        entity_dy[i] = entity_target_y[i] - entity_y[i];
+#define MAX_PATROL_SPEED FP(0x01, 0x40)
+        while(entity_dx[i] > MAX_PATROL_SPEED ||
+              entity_dx[i] < -MAX_PATROL_SPEED ||
+              entity_dy[i] > MAX_PATROL_SPEED ||
+              entity_dy[i] < -MAX_PATROL_SPEED) {
+          if (entity_dx[i] > 1 || entity_dx[i] < -1) {
+            entity_dx[i] /= 2;
+          }
+          if (entity_dy[i] > 1 || entity_dy[i] < -1) {
+            entity_dy[i] /= 2;
+          }
+        }
+        if (entity_dy[i] > entity_dx[i] && entity_dy[i] > -entity_dx[i]) {
+          entity_direction[i] = Down;
+        }
+        if (entity_dy[i] < entity_dx[i] && entity_dy[i] < -entity_dx[i]) {
+          entity_direction[i] = Up;
+        }
+        if (entity_dx[i] > entity_dy[i] && entity_dx[i] > -entity_dy[i]) {
+          entity_direction[i] = Right;
+        }
+        if (entity_dx[i] < entity_dy[i] && entity_dx[i] < -entity_dy[i]) {
+          entity_direction[i] = Left;
+        }
+      } else {
+        entity_x[i] += entity_dx[i];
+        entity_y[i] += entity_dy[i];
+        if ((entity_dx[i] > 0) == (entity_x[i] > entity_target_x[i])) {
+          entity_dx[i] = 0;
+          entity_x[i] = entity_target_x[i];
+        }
+        if ((entity_dy[i] > 0) == (entity_y[i] > entity_target_y[i])) {
+          entity_dy[i] = 0;
+          entity_y[i] = entity_target_y[i];
+        }
+      }
+      break;
+    }
+  }
+}
+
 #define MENU_SCANLINE 0xc0
 
 void dungeon_handler() {
@@ -298,6 +360,8 @@ void dungeon_handler() {
   double_buffer[double_buffer_index++] = temp_int;
   double_buffer[double_buffer_index++] = 0;
   double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
+
+  entities_handler();
 
   pad_poll(0);
   pad1 = pad_state(0);
