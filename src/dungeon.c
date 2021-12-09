@@ -363,6 +363,7 @@ void entities_handler() {
   patrol_coordinates_t coordinates;
 
   for (i = 0; i < num_entities; i++) {
+    if (entity_lives[i] == 0) continue;
     switch (entity_type[i]) {
     case Fire:
       break;
@@ -491,6 +492,7 @@ void dungeon_draw_sprites() {
   oam_meta_spr(INT(player_x), INT(player_y) - 1, (const unsigned char *) metasprites_pointers[temp]);
 
   for(i = 0; i < num_entities; i++) {
+    if (entity_lives[i] == 0) continue;
     switch(entity_type[i]) {
     case Fire:
       oam_meta_spr(INT(entity_x[i]), INT(entity_y[i]) - 1, (const unsigned char *) metasprites_pointers[16]);
