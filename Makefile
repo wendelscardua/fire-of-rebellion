@@ -74,7 +74,8 @@ src/crt0.o: src/crt0.s src/mmc3/mmc3_code.asm src/lib/neslib.s src/lib/nesdoug.s
 	ca65 $< ${CA65_FLAGS}
 
 assets/nametables.o: assets/nametables.s assets/nametables.h \
-                     assets/nametables/title.rle
+                     assets/nametables/title.rle \
+                     assets/nametables/hud.rle
 	ca65 $< ${CA65_FLAGS}
 
 assets/palettes.o: assets/palettes.s assets/palettes.h \
