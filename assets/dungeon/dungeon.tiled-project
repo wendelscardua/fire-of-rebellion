@@ -5,6 +5,10 @@
     "extensionsPath": "../../../file-fixers/assets/sectors/extensions",
     "folders": [
         "../../../file-fixers/assets/sectors",
+        ".",
+        ".",
+        ".",
+        ".",
         "."
     ],
     "objectTypesFile": ""
