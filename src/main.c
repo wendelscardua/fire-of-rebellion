@@ -90,6 +90,9 @@ void main (void) {
     case Title:
       title_handler();
       break;
+    case Main:
+      dungeon_handler();
+      break;
     }
 
     // load the irq array with values it parse

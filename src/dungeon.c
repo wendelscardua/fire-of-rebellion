@@ -2,8 +2,10 @@
 #include "lib/neslib.h"
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
+#include "irq_buffer.h"
 #include "temp.h"
 #include "../assets/palettes.h"
+#include "../assets/nametables.h"
 #include "../assets/metatiles.h"
 #include "../assets/dungeon.h"
 
@@ -56,6 +58,9 @@ void load_room(unsigned char *room_ptr) {
   pal_spr(sprites_palette);
 
   // draw some things
+  vram_adr(NTADR_C(0,0));
+  vram_unrle(hud_nametable);
+  vram_adr(NTADR_A(0,0));
 
   set_mt_pointer(metatiles);
   set_data_pointer(room_buffer);
@@ -86,4 +91,16 @@ void load_room(unsigned char *room_ptr) {
   ppu_on_all();
   set_scroll_y(0);
   pal_fade_to(0, 4);
+}
+
+#define MENU_SCANLINE 0xc0
+
+void dungeon_handler() {
+  double_buffer[double_buffer_index++] = MENU_SCANLINE - 1;
+  double_buffer[double_buffer_index++] = 0xf6;
+  double_buffer[double_buffer_index++] = 8;
+  temp_int = 0x2000; // TODO: switch to dialogue
+  double_buffer[double_buffer_index++] = temp_int;
+  double_buffer[double_buffer_index++] = 0;
+  double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
 }
