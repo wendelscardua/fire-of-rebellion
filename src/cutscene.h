@@ -4,7 +4,7 @@
 void init_cutscene(int * cutscene);
 void check_trigger();
 void cutscene_handler();
-void cutscene_draw_sprites(void);
+void draw_cutscene_sprites(void);
 
 extern const int beginning_cutscene;
 

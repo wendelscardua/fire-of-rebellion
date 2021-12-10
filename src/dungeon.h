@@ -4,6 +4,7 @@
 typedef enum
   {
    Cutscene,
+   Dialog,
    Moving
   } dungeon_mode_t;
 

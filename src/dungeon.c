@@ -390,6 +390,8 @@ void dungeon_moving_handler() {
       player_dx = 0;
     }
   }
+
+  check_trigger();
 }
 
 unsigned char xm, ym;
@@ -602,7 +604,11 @@ void dungeon_handler() {
   double_buffer[double_buffer_index++] = MENU_SCANLINE - 1;
   double_buffer[double_buffer_index++] = 0xf6;
   double_buffer[double_buffer_index++] = 8;
-  temp_int = 0x2000; // TODO: switch to dialogue
+  if (current_dungeon_mode == Cutscene) {
+    temp_int = 0x30;
+  } else {
+    temp_int = 0x00;
+  }
   double_buffer[double_buffer_index++] = temp_int;
   double_buffer[double_buffer_index++] = 0;
   double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
@@ -630,6 +636,7 @@ void dungeon_handler() {
 
   switch(current_dungeon_mode) {
   case Moving: dungeon_moving_handler(); break;
+  case Cutscene: cutscene_handler(); break;
   }
 }
 
@@ -691,4 +698,5 @@ void dungeon_draw_sprites() {
       }
     }
   }
+  if (current_dungeon_mode == Cutscene) draw_cutscene_sprites();
 }
