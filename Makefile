@@ -79,7 +79,10 @@ src/crt0.o: src/crt0.s src/mmc3/mmc3_code.asm src/lib/neslib.s src/lib/nesdoug.s
 
 assets/nametables.o: assets/nametables.s assets/nametables.h \
                      assets/nametables/title.rle \
-                     assets/nametables/hud.rle
+                     assets/nametables/hud.rle \
+                     assets/nametables/prologue.rle \
+                     assets/nametables/good-ending.rle \
+                     assets/nametables/bad-ending.rle
 	ca65 $< ${CA65_FLAGS}
 
 assets/palettes.o: assets/palettes.s assets/palettes.h \
