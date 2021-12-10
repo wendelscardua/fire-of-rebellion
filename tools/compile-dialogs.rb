@@ -15,13 +15,27 @@ characters = {
   'Someone' => 2
 }
 
+def fix(value)
+  value.gsub(/([áãéêíó])/) do |match|
+    codepoint = {
+      'á' => '$5f',
+      'ã' => '$62',
+      'é' => '$63',
+      'ê' => '$64',
+      'í' => '$65',
+      'ó' => '$66'
+    }[match]
+    '", ' + codepoint + ', "'
+  end
+end
+
 dialogs&.each do |dialog_name, dialog_content|
   dialog_table[dialog_name] = []
   dialog_content.each do |dialog_entry|
     key = dialog_entry.keys.first
     value = dialog_entry.values.first
     dialog_table[dialog_name] << characters[key]
-    dialog_table[dialog_name] << '"' + value + '"'
+    dialog_table[dialog_name] << '"' + fix(value) + '"'
   end
   dialog_table[dialog_name] << 0
 end
