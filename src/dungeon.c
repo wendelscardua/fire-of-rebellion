@@ -595,7 +595,7 @@ void dungeon_handler() {
   entities_handler();
   player_fire_handler();
   if (player_lives == 0) {
-    go_to_game_over();
+    go_to_bad_ending();
     return;
   }
 

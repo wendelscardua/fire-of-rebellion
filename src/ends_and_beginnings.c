@@ -14,8 +14,12 @@
 #pragma code-name ("CODE")
 #pragma rodata-name ("RODATA")
 
-void go_to_game_over() {
-  current_game_state = GameOver;
+#pragma bss-name (push, "ZEROPAGE")
+int text_wall_scroll;
+unsigned char scroll_delay;
+#pragma bss-name (pop)
+
+void start_text_wall(unsigned char * nametable) {
   if (irq_array[0] != 0xff) {
     while(!is_irq_done() ){}
     irq_array[0] = 0xff;
@@ -25,10 +29,11 @@ void go_to_game_over() {
   clear_vram_buffer();
 
   pal_fade_to(4, 0);
-  ppu_off(); // screen off
-  // draw some things
+  ppu_off();
   vram_adr(NTADR_A(0,0));
-  vram_unrle(title_nametable);
+  vram_unrle(empty_nametable);
+  vram_adr(NTADR_C(0,0));
+  vram_unrle(nametable);
   music_stop();
 
   set_scroll_x(0);
@@ -48,9 +53,37 @@ void go_to_game_over() {
 
   ppu_on_all();
   pal_fade_to(0, 4);
+  text_wall_scroll = 0;
+  scroll_delay = 0;
 }
 
-void game_over_handler() {
+void go_to_bad_ending() {
+  current_game_state = GameOver;
+  start_text_wall(bad_ending_nametable);
+}
+
+void go_to_good_ending() {
+  current_game_state = GameOver;
+  start_text_wall(good_ending_nametable);
+}
+
+void go_to_prologue() {
+  current_game_state = Prologue;
+  start_text_wall(prologue_nametable);
+}
+
+#define DELAY 2
+void text_wall_handler() {
+  if (scroll_delay == 0) {
+    if (text_wall_scroll < 0x100) {
+      text_wall_scroll = add_scroll_y(1, text_wall_scroll);
+      set_scroll_y(text_wall_scroll);
+    }
+    scroll_delay = DELAY;
+  } else {
+    --scroll_delay;
+  }
+
   pad_poll(0);
 
   pad1_new = get_pad_new(0);

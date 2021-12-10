@@ -10,7 +10,7 @@
 	.importzp	sp, sreg, regsave, regbank
 	.importzp	tmp1, tmp2, tmp3, tmp4, ptr1, ptr2, ptr3, ptr4
 	.macpack	longbranch
-	.dbg		file, "src/dungeon.c", 18514, 1639109300
+	.dbg		file, "src/dungeon.c", 18525, 1639113066
 	.dbg		file, "src/lib/nesdoug.h", 6692, 1638737118
 	.dbg		file, "src/lib/neslib.h", 8949, 1638737118
 	.dbg		file, "src/lib/unrle.h", 125, 1638737118
@@ -18,10 +18,10 @@
 	.dbg		file, "src/directions.h", 163, 1639105166
 	.dbg		file, "src/dungeon.h", 135, 1639048020
 	.dbg		file, "src/irq_buffer.h", 147, 1638737118
-	.dbg		file, "src/game_over.h", 101, 1639108891
+	.dbg		file, "src/ends_and_beginnings.h", 171, 1639112610
 	.dbg		file, "src/temp.h", 613, 1638737118
 	.dbg		file, "src/../assets/palettes.h", 57, 1638911019
-	.dbg		file, "src/../assets/nametables.h", 78, 1639020653
+	.dbg		file, "src/../assets/nametables.h", 252, 1639112680
 	.dbg		file, "src/../assets/metatiles.h", 159, 1639019462
 	.dbg		file, "src/../assets/sprites.h", 103, 1639049959
 	.dbg		file, "src/../assets/dungeon.h", 168, 1639015544
@@ -57,7 +57,7 @@
 	.dbg		sym, "set_chr_mode_5", "00", extern, "_set_chr_mode_5"
 	.dbg		sym, "double_buffer", "00", extern, "_double_buffer"
 	.dbg		sym, "double_buffer_index", "00", extern, "_double_buffer_index"
-	.dbg		sym, "go_to_game_over", "00", extern, "_go_to_game_over"
+	.dbg		sym, "go_to_bad_ending", "00", extern, "_go_to_bad_ending"
 	.dbg		sym, "pad1", "00", extern, "_pad1"
 	.dbg		sym, "pad1_new", "00", extern, "_pad1_new"
 	.dbg		sym, "temp", "00", extern, "_temp"
@@ -107,7 +107,7 @@
 	.export		_dungeon_draw_sprites
 	.import		_double_buffer
 	.importzp	_double_buffer_index
-	.import		_go_to_game_over
+	.import		_go_to_bad_ending
 	.importzp	_pad1
 	.importzp	_pad1_new
 	.importzp	_temp
@@ -508,10 +508,10 @@ _ym:
 	lda     _player_lives
 	bne     L0006
 ;
-; go_to_game_over();
+; go_to_bad_ending();
 ;
 	.dbg	line, "src/dungeon.c", 598
-	jmp     _go_to_game_over
+	jmp     _go_to_bad_ending
 ;
 ; pad_poll(0);
 ;

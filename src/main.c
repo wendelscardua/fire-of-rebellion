@@ -89,7 +89,7 @@ void main (void) {
       dungeon_handler();
       break;
     case GameOver:
-      game_over_handler();
+      text_wall_handler();
     }
 
 #ifdef DEBUG
