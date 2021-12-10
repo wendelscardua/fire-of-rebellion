@@ -40,7 +40,7 @@ unsigned char checklist_index;
 unsigned char trigger_x1, trigger_y1, trigger_x2, trigger_y2;
 #pragma bss-name(pop)
 
-unsigned char cutscene_checklist[2];
+unsigned char cutscene_checklist[NUM_CUTSCENES];
 
 #pragma code-name("CODE")
 #pragma rodata-name("RODATA")
@@ -97,7 +97,7 @@ const int helping_cutscene[] =
 const int invi_would_help_cutscene[] =
   {
    2,
-   0x70, 0x90, 0x78, 0xa0,
+   0x70, 0x80, 0x78, 0xb0,
    StartDialog, (int) dialog_invi_would_help,
    QuitCutscene
   };
@@ -117,6 +117,7 @@ void init_cutscene(int * cutscene) {
   trigger_x2 = READ;
   trigger_y2 = READ;
   current_cutscene_command = NoCommand;
+  npc_enabled = 0;
 }
 
 extern const char empty_row[];
