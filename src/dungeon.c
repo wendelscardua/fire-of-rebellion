@@ -242,7 +242,7 @@ void damage_player() {
   refresh_hud();
   player_x = last_spawn_x;
   player_y = last_spawn_y;
-  load_room(current_room_ptr);
+  if (player_lives) load_room(current_room_ptr);
 }
 
 unsigned char point_room_collision(unsigned char x, unsigned char y) {
