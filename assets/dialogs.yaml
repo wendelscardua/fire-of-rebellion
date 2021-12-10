@@ -16,6 +16,10 @@ getting_key:
       Esta bem, pegue esse molho de chaves,
       com sorte uma delas deve servir.
       Adeus!
+magic_is_back:
+  - Me: >-
+      Parece que minha magia so era bloqueada dentro da cela trancada.
+      Agora posso ao menos conjurar umas bolas de fogo.
 needs_help:
   - Someone: >-
       Uhhhhgh...

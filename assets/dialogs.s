@@ -2,6 +2,8 @@
 .segment "RODATA"
 .export _dialog_getting_key
 _dialog_getting_key: .byte 1, "Oi, o que ta acontecendo? Ouvi uma baita correria, sinto um cheiro de queimado... E alias, como voce esta ai fora?", 2, "Nao tenho tempo pra explicar, mas esta acontecendo uma rebeliao, a ala dos magos foi tomada por assassinos. Tenho que ir, boa sorte.", 1, "Espera, pode ao menos me tirar daqui?", 2, "Esta bem, pegue esse molho de chaves, com sorte uma delas deve servir. Adeus!", 0
+.export _dialog_magic_is_back
+_dialog_magic_is_back: .byte 1, "Parece que minha magia so era bloqueada dentro da cela trancada. Agora posso ao menos conjurar umas bolas de fogo.", 0
 .export _dialog_needs_help
 _dialog_needs_help: .byte 2, "Uhhhhgh...", 1, "Um mago ferido apareceu do nada, devo ajuda-lo?", 0
 .export _dialog_helping

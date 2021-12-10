@@ -78,6 +78,7 @@ const int beginning_cutscene[] =
    MoveNPC, 0x90,
    RemoveNPC,
    DungeonUnlock,
+   StartDialog, (int) dialog_magic_is_back,
    QuitCutscene
   };
 
