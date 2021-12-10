@@ -75,6 +75,15 @@ const int beginning_cutscene[] =
    QuitCutscene
   };
 
+const int helping_cutscene[] =
+  {
+   1,
+   0x70, 0x60, 0x90, 0x74,
+   PutNPC, 0x80, 0x68, Right,
+   StartDialog, (int) dialog_needs_help,
+   QuitCutscene
+  };
+
 void reset_cutscenes() {
   for(i = 0; i < NUM_CUTSCENES; i++) {
     cutscene_checklist[i] = 0;

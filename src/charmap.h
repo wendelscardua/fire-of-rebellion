@@ -3,6 +3,7 @@
 #pragma charmap (' ', 0x04)
 #pragma charmap (':', 0x1a)
 #pragma charmap ('!', 0x1b)
+#pragma charmap ('-', 0x1d)
 #pragma charmap ('?', 0x1f)
 #pragma charmap (0x27, 0x3e)
 
