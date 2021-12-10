@@ -170,6 +170,84 @@ metasprites_16_data:
 .byte   8,  8,$62,1
 .byte $80
 
+metasprites_17_data:
+
+.byte   0,  0,$14,3
+.byte   8,  0,$15,3
+.byte   0,  8,$24,3
+.byte   8,  8,$25,3
+.byte $80
+
+
+metasprites_18_data:
+
+
+.byte   0,  0,$16,3
+.byte   8,  0,$17,3
+.byte   0,  8,$26,3
+.byte   8,  8,$27,3
+.byte $80
+
+
+metasprites_19_data:
+
+
+.byte   0,  0,$10,3
+.byte   8,  0,$11,3
+.byte   0,  8,$20,3
+.byte   8,  8,$21,3
+.byte $80
+
+
+metasprites_20_data:
+
+
+.byte   0,  0,$12,3
+.byte   8,  0,$13,3
+.byte   0,  8,$22,3
+.byte   8,  8,$23,3
+.byte $80
+
+
+metasprites_21_data:
+
+
+.byte   8,  0,$18,3|OAM_FLIP_H
+.byte   0,  0,$19,3|OAM_FLIP_H
+.byte   8,  8,$28,3|OAM_FLIP_H
+.byte   0,  8,$29,3|OAM_FLIP_H
+.byte $80
+
+
+metasprites_22_data:
+
+
+.byte   8,  0,$1a,3|OAM_FLIP_H
+.byte   0,  0,$1b,3|OAM_FLIP_H
+.byte   8,  8,$2a,3|OAM_FLIP_H
+.byte   0,  8,$2b,3|OAM_FLIP_H
+.byte $80
+
+
+metasprites_23_data:
+
+
+.byte   0,  0,$18,3
+.byte   8,  0,$19,3
+.byte   0,  8,$28,3
+.byte   8,  8,$29,3
+.byte $80
+
+
+metasprites_24_data:
+
+
+.byte   0,  0,$1a,3
+.byte   8,  0,$1b,3
+.byte   0,  8,$2a,3
+.byte   8,  8,$2b,3
+.byte $80
+
 .export _metasprites_pointers
 _metasprites_pointers:
 
@@ -193,3 +271,12 @@ _metasprites_pointers:
 .word metasprites_15_data
 ; fire (fire)
 .word metasprites_16_data
+; npc (2 up, 2 down, 2 left, 2 right)
+.word metasprites_17_data
+.word metasprites_18_data
+.word metasprites_19_data
+.word metasprites_20_data
+.word metasprites_21_data
+.word metasprites_22_data
+.word metasprites_23_data
+.word metasprites_24_data
