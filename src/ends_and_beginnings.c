@@ -2,6 +2,7 @@
 #include "lib/neslib.h"
 #include "lib/unrle.h"
 #include "music/soundtrack.h"
+#include "music/soundfx.h"
 #include "mmc3/mmc3_code.h"
 #include "irq_buffer.h"
 #include "main.h"
@@ -96,12 +97,15 @@ void text_wall_handler() {
     if (text_wall_scroll < 0x100) {
       text_wall_scroll = 0x100;
       set_scroll_y(text_wall_scroll);
+      sfx_play(SFXText, 0);
     } else {
       switch(current_game_state) {
       case Prologue:
+        sfx_play(SFXStart, 0);
         start_game();
         break;
       case GameOver:
+        sfx_play(SFXText, 0);
         go_to_title();
         break;
       }

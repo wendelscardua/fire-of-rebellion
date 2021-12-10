@@ -5,7 +5,12 @@ typedef enum
   {
    SFXStart,
    SFXAchieved,
-   SFXHit
+   SFXHit,
+   SFXKnock,
+   SFXTeleport,
+   SFXCursor,
+   SFXSelect,
+   SFXText
   } sfx_t;
 
 #endif

@@ -373,6 +373,7 @@ void dungeon_moving_handler() {
       player_energy -= 5;
       refresh_hud();
       invi_timer = INVI_DELAY;
+      sfx_play(SFXTeleport, 0);
     }
   }
 
@@ -649,7 +650,12 @@ void dungeon_handler() {
     }
   }
 
-  if (invi_timer > 0) --invi_timer;
+  if (invi_timer > 0) {
+    --invi_timer;
+    if (invi_timer == 0) {
+      sfx_play(SFXTeleport, 0);
+    }
+  }
 
   entities_handler();
   player_fire_handler();
@@ -744,6 +750,7 @@ void unlock_dungeon() {
   player_energy = 3;
   refresh_hud();
   multi_vram_buffer_horz(fire_text, 9, NTADR_C(22, 1));
+  sfx_play(SFXKnock, 0);
 }
 
 void unlock_invi() {

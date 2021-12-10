@@ -2,6 +2,7 @@
 #include "lib/neslib.h"
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
+#include "music/soundfx.h"
 #include "directions.h"
 #include "dungeon.h"
 #include "irq_buffer.h"
@@ -133,12 +134,14 @@ void dialog_handler() {
   temp = *current_dialog;
   if (temp == 0) {
     if (pad1_new & PAD_A) {
+      sfx_play(SFXText, 0);
       clean_dialog_window();
       current_cutscene_command = NoCommand;
     }
   } else if (temp <= 2) {
     if (temp != current_speaker) {
       if (pad1_new & PAD_A) {
+        sfx_play(SFXText, 0);
         current_speaker = temp;
         clean_dialog_window();
         ++current_dialog;
@@ -155,6 +158,7 @@ void dialog_handler() {
     if (dialog_column + temp > LAST_DIALOG_COLUMN) {
       if (dialog_row == LAST_DIALOG_ROW) {
         if (pad1_new & PAD_A) {
+          sfx_play(SFXText, 0);
           clean_dialog_window();
         }
       } else {
@@ -242,7 +246,9 @@ void cutscene_handler() {
   case YesNoPrompt:
     if (pad1_new & (PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN | PAD_SELECT)) {
       yes_no_state = !yes_no_state;
+      sfx_play(SFXCursor, 0);
     } else if (pad1_new & PAD_A) {
+      sfx_play(SFXSelect, 0);
       clean_dialog_window();
       if (yes_no_state == 0) {
         current_cutscene_command = NoCommand;
