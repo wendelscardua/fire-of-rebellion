@@ -23,6 +23,8 @@
 #define SPRITE_0 4
 #define SPRITE_1 6
 
+#define ENERGY_RECOVERY_DELAY (60 * 8)
+
 #define MAX_SPEED FP(0x01, 0x20)
 #define ACCELERATION FP(0x00, 0x20)
 #define FRICTION FP(0x00, 0x10)
@@ -63,6 +65,8 @@ signed int player_x, player_y;
 signed int player_dx, player_dy;
 direction_t player_direction;
 unsigned char player_lives, player_energy;
+unsigned char has_fire, has_invi;
+unsigned int energy_recovery_time;
 
 signed int last_spawn_x, last_spawn_y;
 
@@ -93,20 +97,35 @@ const char empty_row[32] =
    0, 0, 0, 0, 0, 0, 0, 0
   };
 
+const unsigned char fire_text[9]=
+  {
+   0x26,0x4f,0x47,0x4f,0x00,0x1c,0x11,0x05,0x1e
+  };
+
+const unsigned char invi_text[9]=
+  {
+   0x29,0x4e,0x56,0x49,0x00,0x1c,0x15,0x05,0x1e
+  };
+
 void load_room(unsigned char *room_ptr);
 void refresh_hud();
 
 void init_dungeon () {
-  load_room((unsigned char*) starting_room);
-  last_spawn_x = player_x = FP(0x80, 0x00); // TODO: back to 0x30
-  last_spawn_y = player_y = FP(0x40, 0x00);
+  player_x = FP(0x30, 0x00); // TODO: back to 0x30
+  player_y = FP(0x40, 0x00);
+  last_spawn_x = FP(0x80, 0x00);
+  last_spawn_y = FP(0x40, 0x00);
   player_dx = 0x00;
   player_dy = 0x00;
   player_direction = Down;
   player_lives = 3;
-  player_energy = 5;
+  player_energy = 0;
+  has_fire = 0;
+  has_invi = 0;
   shooting_cooldown = 0;
+  energy_recovery_time = 0;
   current_dungeon_mode = Moving;
+  load_room((unsigned char*) starting_room);
 }
 
 void load_room(unsigned char *room_ptr) {
@@ -308,7 +327,7 @@ void dungeon_moving_handler() {
     }
   }
   if (pad1_new & PAD_A) {
-    if (player_energy > 0 && num_entities < MAX_ENTITIES) {
+    if (has_fire && player_energy > 0 && num_entities < MAX_ENTITIES) {
       --player_energy;
       refresh_hud();
       // spawn new player fire
@@ -592,6 +611,16 @@ void dungeon_handler() {
   double_buffer[double_buffer_index++] = temp_int;
   double_buffer[double_buffer_index++] = 0;
   double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
+
+  if (has_fire && player_energy < 5) {
+    if (energy_recovery_time == 0) {
+      energy_recovery_time = ENERGY_RECOVERY_DELAY;
+      player_energy++;
+      refresh_hud();
+    } else {
+      --energy_recovery_time;
+    }
+  }
 
   entities_handler();
   player_fire_handler();
