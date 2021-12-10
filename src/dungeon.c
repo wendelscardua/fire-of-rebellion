@@ -104,7 +104,6 @@ void init_dungeon () {
   player_energy = 5;
   shooting_cooldown = 0;
   current_dungeon_mode = Moving;
-  refresh_hud();
 }
 
 void load_room(unsigned char *room_ptr) {
@@ -185,6 +184,7 @@ void load_room(unsigned char *room_ptr) {
   set_chr_mode_1(SPRITE_1);
   oam_clear();
   dungeon_draw_sprites();
+  refresh_hud();
   ppu_on_all();
   set_scroll_y(0);
   pal_fade_to(0, 4);
@@ -403,12 +403,20 @@ void entities_handler() {
     case Fireball:
       entity_x[i] += entity_dx[i];
       entity_y[i] += entity_dy[i];
+      if (entity_x[i] >= player_x && entity_x[i] < player_x + FP(0x10, 00) &&
+          entity_y[i] >= player_y && entity_y[i] < player_y + FP(0x10, 00)) {
+        entity_lives[i] = 0;
+        --player_lives;
+        refresh_hud();
+        break;
+      }
       if (entity_x[i] < FP(0x10, 0x00) ||
           entity_x[i] >= FP(0xf0, 0x00) ||
           entity_y[i] < FP(0x10, 0x00) ||
           entity_y[i] >= FP(0xb0, 0x00) ||
           point_room_collision(INT(entity_x[i]), INT(entity_y[i]))) {
         entity_lives[i] = 0;
+        break;
       }
       break;
     case Patrol:
@@ -536,7 +544,7 @@ void player_fire_handler() {
 
     for(temp = 0; temp < num_entities; temp++) {
       if ((entity_lives[temp] > 0) &&
-          (entity_type[temp] != Fire) &&
+          (entity_type[temp] == Patrol) &&
           (entity_x[temp] <= player_fire_x[i]) &&
           (player_fire_x[i] < entity_x[temp] + FP(0x10, 0x00)) &&
           (entity_y[temp] <= player_fire_y[i]) &&
