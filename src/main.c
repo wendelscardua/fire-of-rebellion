@@ -88,6 +88,7 @@ void main (void) {
     case Main:
       dungeon_handler();
       break;
+    case Prologue:
     case GameOver:
       text_wall_handler();
     }
@@ -183,7 +184,7 @@ void title_handler() {
     pad1_new = get_pad_new(0);
     if (pad1_new & (PAD_START | PAD_A)) {
       //sfx_play(SFX_START, 0);
-      start_game();
+      go_to_prologue();
       break;
     }
   }

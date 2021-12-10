@@ -21,5 +21,6 @@ extern game_state_t current_game_state;
 #define SPRITE_1 6
 
 void go_to_title();
+void start_game();
 
 #endif

@@ -89,7 +89,20 @@ void text_wall_handler() {
   pad1_new = get_pad_new(0);
 
   if (pad1_new & (PAD_START | PAD_A)) {
-    go_to_title();
+    if (text_wall_scroll < 0x100) {
+      text_wall_scroll = 0x100;
+      set_scroll_y(text_wall_scroll);
+    } else {
+      switch(current_game_state) {
+      case Prologue:
+        start_game();
+        break;
+      case GameOver:
+        go_to_title();
+        break;
+      }
+
+    }
     return;
   }
 }
