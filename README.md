@@ -1,4 +1,4 @@
-# Fire of Rebellion 
+# Fire of Rebellion
 
 An action RPG for NES, made for [Jogabilijam 4](https://itch.io/jam/jogabilijam4)
 
@@ -37,3 +37,13 @@ emulator (with path defined by the `EMULATOR` variable on Makefile):
 ```sh
 $ make run
 ```
+
+## Credits
+
+### Jam team
+* Code: Wendel Scardua
+* Art: Raul Felix
+* GDD: Charleu Tenório
+
+### Public domain content
+* Music: Ted Karr
