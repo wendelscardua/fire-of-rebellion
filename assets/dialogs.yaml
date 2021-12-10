@@ -1,0 +1,31 @@
+getting_key:
+  - Me: >-
+      Oi, o que ta acontecendo? Ouvi
+      uma baita correria, sinto um
+      cheiro de queimado... E
+      alias, como voce esta ai fora?
+  - Someone: >-
+      Nao tenho tempo pra explicar,
+      mas esta acontecendo uma
+      rebeliao, a ala dos magos
+      foi tomada por assassinos.
+      Tenho que ir, boa sorte.
+  - Me: >-
+      Espera, pode ao menos me tirar daqui?
+  - Someone: >-
+      Esta bem, pegue esse molho de chaves,
+      com sorte uma delas deve servir.
+      Adeus!
+needs_help:
+  - Someone: >-
+      Uhhhhgh...
+  - Me: >-
+      Devo ajudar? Sim ou Nao?
+helping:
+  - Someone: >-
+      Obrigado por tentar me ajudar, mas ja
+      e tarde demais para mim. Porem como
+      gratidao quero que fique com isso: um anel
+      de invisibilidade. Tome cuidado pois ele
+      requer muito poder e seu efeito dura pouco
+      tempo. Adeus, jovem...

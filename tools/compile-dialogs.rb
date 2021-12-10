@@ -11,8 +11,8 @@ dialogs = YAML.safe_load(File.read(input_file))
 dialog_table = {}
 
 characters = {
-  'Lorem' => 1,
-  'Ipsum' => 2
+  'Me' => 1,
+  'Someone' => 2
 }
 
 dialogs&.each do |dialog_name, dialog_content|
@@ -28,7 +28,7 @@ end
 
 File.open(output_file, 'wb') do |f|
   f.puts '.include "../src/charmap.inc"'
-  f.puts '.segment "BANK1"'
+  f.puts '.segment "RODATA"'
 
   dialog_table.each do |dialog_name, dialog_content|
     f.puts ".export _dialog_#{dialog_name}"
