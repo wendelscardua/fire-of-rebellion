@@ -382,7 +382,25 @@ void dungeon_moving_handler() {
 
   if (exiting_room()) return;
 
-  if (player_room_collision(INT(player_x), INT(player_y))) {
+  temp_x = INT(player_x);
+  temp_y = INT(player_y);
+  if (player_room_collision(temp_x, temp_y)) {
+    if (player_dx < 0) {
+      if (point_room_collision(temp_x + 1, temp_y + 8)) player_y += FP(0x01, 0x00);
+      if (point_room_collision(temp_x + 1, temp_y + 15)) player_y -= FP(0x01, 0x00);
+    }
+    if (player_dx > 0) {
+      if (point_room_collision(temp_x + 14, temp_y + 8)) player_y += FP(0x01, 0x00);
+      if (point_room_collision(temp_x + 14, temp_y + 15)) player_y -= FP(0x01, 0x00);
+    }
+    if (player_dy < 0) {
+      if (point_room_collision(temp_x + 1, temp_y + 8)) player_x += FP(0x01, 0x00);
+      if (point_room_collision(temp_x + 14, temp_y + 8)) player_x -= FP(0x01, 0x00);
+    }
+    if (player_dy > 0) {
+      if (point_room_collision(temp_x + 1, temp_y + 15)) player_x += FP(0x01, 0x00);
+      if (point_room_collision(temp_x + 14, temp_y + 15)) player_x -= FP(0x01, 0x00);
+    }
     player_x -= player_dx;
     player_y -= player_dy;
     player_dx = player_dy = 0;
