@@ -33,14 +33,6 @@
 
 typedef enum
   {
-   Cutscene,
-   Moving,
-   Dialogue,
-   Prompt
-  } dungeon_mode_t;
-
-typedef enum
-  {
    Fire,
    Patrol,
    Fireball
