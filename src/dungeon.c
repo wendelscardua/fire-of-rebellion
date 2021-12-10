@@ -210,7 +210,7 @@ void load_room(unsigned char *room_ptr) {
 void refresh_hud() {
   for(i = 0; i < 3; i++) {
     if (i < player_lives) {
-      one_vram_buffer(0x04, NTADR_C(8 + i, 1));
+      one_vram_buffer(0x3d, NTADR_C(8 + i, 1));
     } else {
       one_vram_buffer(0x00, NTADR_C(8 + i, 1));
     }
