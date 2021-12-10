@@ -7,6 +7,7 @@ map.txt
 src/irq_buffer.s
 src/main.s
 src/nametable_loader.s
+src/dungeon.s
 src/ends_and_beginnings.s
 src/temp.s
 src/wram.s
