@@ -370,8 +370,9 @@ sounds_data:
 .word start	;$fffc reset
 .word irq	;$fffe irq / brk
 
-
 .segment "CHARS"
 
 .incbin "../assets/bg.chr" ; 4k
 .incbin "../assets/sprites.chr" ; 4k
+.incbin "../assets/bg-title.chr" ; 4k
+.res 4096

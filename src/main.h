@@ -19,6 +19,10 @@ extern game_state_t current_game_state;
 #define BG_MAIN_3 3
 #define SPRITE_0 4
 #define SPRITE_1 6
+#define BG_TITLE_0 8
+#define BG_TITLE_1 9
+#define BG_TITLE_2 10
+#define BG_TITLE_3 11
 
 void go_to_title();
 void start_game();

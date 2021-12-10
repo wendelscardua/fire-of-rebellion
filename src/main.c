@@ -165,14 +165,14 @@ void go_to_title (void) {
 
   draw_sprites();
 
-  set_chr_mode_2(BG_MAIN_0);
-  set_chr_mode_3(BG_MAIN_1);
-  set_chr_mode_4(BG_MAIN_2);
-  set_chr_mode_5(BG_MAIN_3);
+  set_chr_mode_2(BG_TITLE_0);
+  set_chr_mode_3(BG_TITLE_1);
+  set_chr_mode_4(BG_TITLE_2);
+  set_chr_mode_5(BG_TITLE_3);
   set_chr_mode_0(SPRITE_0);
   set_chr_mode_1(SPRITE_1);
 
-  pal_bg(bg_palette);
+  pal_bg(bg_title_palette);
   pal_spr(sprites_palette);
 
   ppu_on_all(); //	turn on screen
@@ -186,6 +186,10 @@ void title_handler() {
     pad1_new = get_pad_new(0);
     if (pad1_new & (PAD_START | PAD_A)) {
       sfx_play(SFXStart, 0);
+      pal_fade_to(4, 5);
+      pal_fade_to(5, 4);
+      pal_fade_to(4, 5);
+      pal_fade_to(5, 4);
       go_to_prologue();
       break;
     }

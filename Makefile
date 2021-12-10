@@ -90,7 +90,7 @@ assets/nametables.o: assets/nametables.s assets/nametables.h \
 	ca65 $< ${CA65_FLAGS}
 
 assets/palettes.o: assets/palettes.s assets/palettes.h \
-                   assets/bg.pal assets/sprites.pal
+                   assets/bg.pal assets/sprites.pal assets/bg-title.pal
 	ca65 $< ${CA65_FLAGS}
 
 assets/sprites.o: assets/sprites.s assets/sprites.h
