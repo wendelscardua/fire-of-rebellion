@@ -157,7 +157,7 @@ void go_to_title (void) {
   // draw some things
   vram_adr(NTADR_A(0,0));
   vram_unrle(title_nametable);
-  music_play(RPGBattleTheme);
+  music_play(VictoryLoop);
 
   set_scroll_x(0);
   set_scroll_y(0);

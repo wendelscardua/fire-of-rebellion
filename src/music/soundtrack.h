@@ -3,7 +3,8 @@
 
 typedef enum
   {
-   RPGBattleTheme
+   RPGBattleTheme,
+   VictoryLoop
   } music_t;
 
 #endif
