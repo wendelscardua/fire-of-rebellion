@@ -474,8 +474,8 @@ void entities_handler() {
       }
       break;
     case Patrol:
-      if (entity_x[i] >= player_x && entity_x[i] < player_x + FP(0x10, 00) &&
-          entity_y[i] >= player_y && entity_y[i] < player_y + FP(0x10, 00)) {
+      if (entity_x[i] + 8 >= player_x && entity_x[i] + 8 < player_x + FP(0x10, 00) &&
+          entity_y[i] + 8 >= player_y && entity_y[i] + 8 < player_y + FP(0x10, 00) && invi_timer == 0) {
         damage_player();
         break;
       }
