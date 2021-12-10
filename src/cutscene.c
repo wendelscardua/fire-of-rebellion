@@ -212,6 +212,10 @@ void cutscene_handler() {
       unlock_dungeon();
       current_cutscene_command = NoCommand;
       break;
+    case InviUnlock:
+      unlock_invi();
+      current_cutscene_command = NoCommand;
+      break;
     case QuitCutscene:
       current_cutscene = 0;
       current_dungeon_mode = Moving;

@@ -712,3 +712,8 @@ void unlock_dungeon() {
   has_fire = 1;
   multi_vram_buffer_horz(fire_text, 9, NTADR_C(22, 1));
 }
+
+void unlock_invi() {
+  has_invi = 1;
+  multi_vram_buffer_horz(invi_text, 9, NTADR_C(22, 2));
+}

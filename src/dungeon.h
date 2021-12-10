@@ -15,4 +15,5 @@ void init_dungeon(void);
 void dungeon_handler(void);
 void dungeon_draw_sprites(void);
 void unlock_dungeon(void);
+void unlock_invi(void);
 #endif
