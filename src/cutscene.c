@@ -7,6 +7,7 @@
 #include "irq_buffer.h"
 #include "temp.h"
 #include "main.h"
+#include  "charmap.h"
 #include "../assets/metatiles.h"
 #include "../assets/sprites.h"
 #include "../assets/dialogs.h"
@@ -32,6 +33,7 @@ unsigned char cutscene_aux;
 unsigned char current_speaker;
 unsigned char dialog_row;
 unsigned char dialog_column;
+unsigned char yes_no_state;
 unsigned char npc_x, npc_y, npc_direction, npc_enabled;
 unsigned char checklist_index;
 unsigned char trigger_x1, trigger_y1, trigger_x2, trigger_y2;
@@ -49,12 +51,15 @@ typedef enum {
               MoveNPC,
               TurnNPC,
               StartDialog,
+              YesNoPrompt,
               DungeonUnlock,
-              CloseDialog,
+              InviUnlock,
               QuitCutscene
 } cutscene_command_t;
 
 cutscene_command_t current_cutscene_command;
+
+const char yes_no_text[] = "Sim    Nao";
 
 const int beginning_cutscene[] =
   {
@@ -81,6 +86,9 @@ const int helping_cutscene[] =
    0x70, 0x60, 0x90, 0x74,
    PutNPC, 0x80, 0x68, Right,
    StartDialog, (int) dialog_needs_help,
+   YesNoPrompt,
+   StartDialog, (int) dialog_helping,
+   InviUnlock,
    QuitCutscene
   };
 
@@ -196,6 +204,10 @@ void cutscene_handler() {
       dialog_column = FIRST_DIALOG_COLUMN;
       current_speaker = *current_dialog;
       break;
+    case YesNoPrompt:
+      multi_vram_buffer_horz(yes_no_text, 10, NTADR_C(11, 9));
+      yes_no_state = 0;
+      break;
     case DungeonUnlock:
       unlock_dungeon();
       current_cutscene_command = NoCommand;
@@ -223,6 +235,21 @@ void cutscene_handler() {
   case StartDialog:
     dialog_handler();
     break;
+  case YesNoPrompt:
+    if (pad1_new & (PAD_LEFT | PAD_RIGHT | PAD_UP | PAD_DOWN | PAD_SELECT)) {
+      yes_no_state = !yes_no_state;
+    } else if (pad1_new & PAD_A) {
+      clean_dialog_window();
+      if (yes_no_state == 0) {
+        current_cutscene_command = NoCommand;
+      } else {
+        // quit scene (TODO: maybe allow branching?)
+        current_cutscene = 0;
+        current_dungeon_mode = Moving;
+        cutscene_checklist[checklist_index] = 1;
+      }
+    }
+    break;
   }
 }
 
@@ -240,6 +267,12 @@ void draw_cutscene_sprites() {
       oam_meta_spr(0x14, 0xcc, (const unsigned char *) metasprites_pointers[2]);
     } else {
       oam_meta_spr(0x14, 0xcc, (const unsigned char *) metasprites_pointers[19]);
+    }
+  } else if (current_cutscene_command == YesNoPrompt) {
+    if (yes_no_state == 0) {
+      oam_spr(0x50, 0xd7, 0x50, 0x02);
+    } else {
+      oam_spr(0x87, 0xd7, 0x50, 0x02);
     }
   }
 }
