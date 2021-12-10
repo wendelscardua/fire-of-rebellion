@@ -1,3 +1,4 @@
+extern unsigned char empty_nametable[];
 extern unsigned char title_nametable[];
 extern unsigned char hud_nametable[];
 extern unsigned char prologue_nametable[];
