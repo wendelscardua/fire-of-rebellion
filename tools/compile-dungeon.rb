@@ -34,6 +34,7 @@ class DungeonCompiler
                 Patrol
              .endenum
              .segment "RODATA"
+             .include "cutscene.inc"
              .export _starting_room
              _starting_room: .word #{labelify(world['maps'].first['fileName'])}
       PREAMBLE
@@ -93,6 +94,15 @@ class DungeonCompiler
 
   def read_tmx_file(tmx_file)
     document = Nokogiri::XML(File.read(tmx_file))
+
+    cutscene_pointer = '0'
+
+    cutscene_prop = document.xpath('//property').find { |prop| prop['name'] == 'cutscene' }
+
+    if cutscene_prop
+      cutscene_pointer = "_#{cutscene_prop['value']}_cutscene"
+    end
+
     entity_payload = []
 
     objects = document.xpath('//objectgroup/object')
@@ -124,6 +134,7 @@ class DungeonCompiler
 
       rle_tiles = RLE.rle(metatiles)
       <<~"TMX_DATA"
+      .word #{cutscene_pointer}
       .byte #{entity_payload.join(', ')}
       .byte #{rle_tiles.join(', ')}
     TMX_DATA

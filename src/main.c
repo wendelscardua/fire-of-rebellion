@@ -8,6 +8,7 @@
 #include "mmc3/mmc3_code.h"
 #include "music/soundtrack.h"
 #include "charmap.h"
+#include "cutscene.h"
 #include "main.h"
 #include "irq_buffer.h"
 #include "nametable_loader.h"
@@ -199,6 +200,7 @@ void start_game (void) {
     unseeded = 0;
   }
 
+  reset_cutscenes();
   current_game_state = Main;
   init_dungeon();
 }

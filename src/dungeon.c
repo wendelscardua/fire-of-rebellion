@@ -2,6 +2,7 @@
 #include "lib/neslib.h"
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
+#include "cutscene.h"
 #include "directions.h"
 #include "dungeon.h"
 #include "irq_buffer.h"
@@ -30,14 +31,6 @@
 #define FRICTION FP(0x00, 0x10)
 
 #define MAX_ENTITIES 16
-
-typedef enum
-  {
-   Cutscene,
-   Moving,
-   Dialogue,
-   Prompt
-  } dungeon_mode_t;
 
 typedef enum
   {
@@ -97,12 +90,12 @@ const char empty_row[32] =
    0, 0, 0, 0, 0, 0, 0, 0
   };
 
-const unsigned char fire_text[9]=
+const char fire_text[9]=
   {
    0x26,0x4f,0x47,0x4f,0x00,0x1c,0x11,0x05,0x1e
   };
 
-const unsigned char invi_text[9]=
+const char invi_text[9]=
   {
    0x29,0x4e,0x56,0x49,0x00,0x1c,0x15,0x05,0x1e
   };
@@ -138,6 +131,8 @@ void load_room(unsigned char *room_ptr) {
   left_room_ptr = *(unsigned char **) room_ptr;
   room_ptr += 2;
   right_room_ptr = *(unsigned char **) room_ptr;
+  room_ptr += 2;
+  init_cutscene(*(int **) room_ptr);
   room_ptr += 2;
 
   num_entities = *room_ptr; ++room_ptr;
@@ -215,7 +210,7 @@ void load_room(unsigned char *room_ptr) {
 void refresh_hud() {
   for(i = 0; i < 3; i++) {
     if (i < player_lives) {
-      one_vram_buffer(0x04, NTADR_C(8 + i, 1));
+      one_vram_buffer(0x3d, NTADR_C(8 + i, 1));
     } else {
       one_vram_buffer(0x00, NTADR_C(8 + i, 1));
     }
@@ -395,6 +390,8 @@ void dungeon_moving_handler() {
       player_dx = 0;
     }
   }
+
+  check_trigger();
 }
 
 unsigned char xm, ym;
@@ -607,7 +604,11 @@ void dungeon_handler() {
   double_buffer[double_buffer_index++] = MENU_SCANLINE - 1;
   double_buffer[double_buffer_index++] = 0xf6;
   double_buffer[double_buffer_index++] = 8;
-  temp_int = 0x2000; // TODO: switch to dialogue
+  if (current_dungeon_mode == Cutscene) {
+    temp_int = 0x30;
+  } else {
+    temp_int = 0x00;
+  }
   double_buffer[double_buffer_index++] = temp_int;
   double_buffer[double_buffer_index++] = 0;
   double_buffer[double_buffer_index++] = ((temp_int & 0xF8) << 2);
@@ -635,6 +636,7 @@ void dungeon_handler() {
 
   switch(current_dungeon_mode) {
   case Moving: dungeon_moving_handler(); break;
+  case Cutscene: cutscene_handler(); break;
   }
 }
 
@@ -696,4 +698,17 @@ void dungeon_draw_sprites() {
       }
     }
   }
+  if (current_dungeon_mode == Cutscene) draw_cutscene_sprites();
+}
+
+void unlock_dungeon() {
+  room_buffer[0x83] = 0;
+  room_buffer[0x84] = 0;
+  for(temp_x = 3; temp_x <= 4; temp_x++) {
+    temp_y = 8;
+    temp_int = 0x2000 + 2 * temp_x + 0x40 * temp_y;
+    buffer_4_mt(temp_int, (temp_y << 4) | temp_x);
+  }
+  has_fire = 1;
+  multi_vram_buffer_horz(fire_text, 9, NTADR_C(22, 1));
 }

@@ -25,6 +25,7 @@ ${TARGET}: MMC3.cfg \
            src/temp.o \
            src/wram.o \
            src/dungeon.o \
+           src/cutscene.o \
            src/ends_and_beginnings.o \
            assets/nametables.o \
            assets/palettes.o \
@@ -72,6 +73,8 @@ src/wram.s: src/wram.c \
 src/dungeon.s: src/dungeon.c
 	cc65 -Oirs $< --add-source ${CA65_FLAGS}
 
+src/cutscene.s: src/cutscene.c
+	cc65 -Oirs $< --add-source ${CA65_FLAGS}
 
 src/crt0.o: src/crt0.s src/mmc3/mmc3_code.asm src/lib/neslib.s src/lib/nesdoug.s assets/*.chr \
             src/music/soundtrack.s src/music/soundfx.s
