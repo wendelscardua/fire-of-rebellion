@@ -5,6 +5,7 @@
 #include "directions.h"
 #include "dungeon.h"
 #include "irq_buffer.h"
+#include "game_over.h"
 #include "temp.h"
 #include "../assets/palettes.h"
 #include "../assets/nametables.h"
@@ -63,6 +64,8 @@ signed int player_dx, player_dy;
 direction_t player_direction;
 unsigned char player_lives, player_energy;
 
+signed int last_spawn_x, last_spawn_y;
+
 dungeon_mode_t current_dungeon_mode;
 
 unsigned char num_entities;
@@ -95,8 +98,8 @@ void refresh_hud();
 
 void init_dungeon () {
   load_room((unsigned char*) starting_room);
-  player_x = FP(0x80, 0x00); // TODO: back to 0x30
-  player_y = FP(0x40, 0x00);
+  last_spawn_x = player_x = FP(0x80, 0x00); // TODO: back to 0x30
+  last_spawn_y = player_y = FP(0x40, 0x00);
   player_dx = 0x00;
   player_dy = 0x00;
   player_direction = Down;
@@ -109,20 +112,20 @@ void init_dungeon () {
 void load_room(unsigned char *room_ptr) {
   current_room_ptr = room_ptr;
 
-  up_room_ptr = *(unsigned char **) current_room_ptr;
-  current_room_ptr += 2;
-  down_room_ptr = *(unsigned char **) current_room_ptr;
-  current_room_ptr += 2;
-  left_room_ptr = *(unsigned char **) current_room_ptr;
-  current_room_ptr += 2;
-  right_room_ptr = *(unsigned char **) current_room_ptr;
-  current_room_ptr += 2;
+  up_room_ptr = *(unsigned char **) room_ptr;
+  room_ptr += 2;
+  down_room_ptr = *(unsigned char **) room_ptr;
+  room_ptr += 2;
+  left_room_ptr = *(unsigned char **) room_ptr;
+  room_ptr += 2;
+  right_room_ptr = *(unsigned char **) room_ptr;
+  room_ptr += 2;
 
-  num_entities = *current_room_ptr; ++current_room_ptr;
+  num_entities = *room_ptr; ++room_ptr;
   for(i = 0; i < num_entities; ++i) {
-    entity_type[i] = *current_room_ptr; ++current_room_ptr;
-    entity_x[i] = entity_target_x[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
-    entity_y[i] = entity_target_y[i] = FP(*current_room_ptr, 0x00), ++current_room_ptr;
+    entity_type[i] = *room_ptr; ++room_ptr;
+    entity_x[i] = entity_target_x[i] = FP(*room_ptr, 0x00), ++room_ptr;
+    entity_y[i] = entity_target_y[i] = FP(*room_ptr, 0x00), ++room_ptr;
     entity_dx[i] = entity_dy[i] = entity_direction[i] = entity_patrol_index[i] = 0;
 
     switch(entity_type[i]) {
@@ -131,15 +134,15 @@ void load_room(unsigned char *room_ptr) {
       break;
     case Patrol:
       entity_lives[i] = 0x01;
-      temp = num_entity_patrol_points[i] = *current_room_ptr; ++current_room_ptr;
-      entity_patrol_points[i] = (patrol_coordinates_t(*)[]) current_room_ptr;
-      current_room_ptr += (2 * temp);
+      temp = num_entity_patrol_points[i] = *room_ptr; ++room_ptr;
+      entity_patrol_points[i] = (patrol_coordinates_t(*)[]) room_ptr;
+      room_ptr += (2 * temp);
       break;
     }
   }
 
   set_unrle_buffer((unsigned char *) room_buffer);
-  unrle_to_buffer(current_room_ptr);
+  unrle_to_buffer(room_ptr);
 
   pal_fade_to(4, 0);
   ppu_off();
@@ -207,6 +210,14 @@ void refresh_hud() {
   }
 }
 
+void damage_player() {
+  --player_lives;
+  refresh_hud();
+  player_x = last_spawn_x;
+  player_y = last_spawn_y;
+  load_room(current_room_ptr);
+}
+
 unsigned char point_room_collision(unsigned char x, unsigned char y) {
   temp_char = room_buffer[(y & 0xf0) | (x >> 4)];
   // 0 is ground, 1 is front wall, 2 is top wall and 3 is iron bar
@@ -228,28 +239,32 @@ unsigned char exiting_room() {
   temp_x = INT(player_x);
   temp_y = INT(player_y);
   if (temp_y < 0x08) {
-    player_y = FP(0xa0, 0x80);
+    last_spawn_x = player_x;
+    last_spawn_y = player_y = FP(0xa0, 0x80);
     if (up_room_ptr == 0) victory();
     else load_room(up_room_ptr);
     return 1;
   }
 
   if (temp_y >= 0xa8) {
-    player_y = FP(0x08, 0x80);
+    last_spawn_x = player_x;
+    last_spawn_y = player_y = FP(0x08, 0x80);
     if (down_room_ptr == 0) victory();
     else load_room(down_room_ptr);
     return 1;
   }
 
   if (temp_x < 0x08) {
-    player_x = FP(0xef, 0x80);
+    last_spawn_x = player_x = FP(0xef, 0x80);
+    last_spawn_y = player_y;
     if (left_room_ptr == 0) victory();
     else load_room(left_room_ptr);
     return 1;
   }
 
   if (temp_x >= 0xf0) {
-    player_x = FP(0x08, 0x80);
+    last_spawn_x = player_x = FP(0x08, 0x80);
+    last_spawn_y = player_y;
     if (right_room_ptr == 0) victory();
     else load_room(right_room_ptr);
     return 1;
@@ -399,6 +414,11 @@ void entities_handler() {
     if (entity_lives[i] == 0) continue;
     switch (entity_type[i]) {
     case Fire:
+      if (entity_x[i] >= player_x && entity_x[i] < player_x + FP(0x10, 00) &&
+          entity_y[i] >= player_y && entity_y[i] < player_y + FP(0x10, 00)) {
+        damage_player();
+        break;
+      }
       break;
     case Fireball:
       entity_x[i] += entity_dx[i];
@@ -406,8 +426,7 @@ void entities_handler() {
       if (entity_x[i] >= player_x && entity_x[i] < player_x + FP(0x10, 00) &&
           entity_y[i] >= player_y && entity_y[i] < player_y + FP(0x10, 00)) {
         entity_lives[i] = 0;
-        --player_lives;
-        refresh_hud();
+        damage_player();
         break;
       }
       if (entity_x[i] < FP(0x10, 0x00) ||
@@ -420,6 +439,11 @@ void entities_handler() {
       }
       break;
     case Patrol:
+      if (entity_x[i] >= player_x && entity_x[i] < player_x + FP(0x10, 00) &&
+          entity_y[i] >= player_y && entity_y[i] < player_y + FP(0x10, 00)) {
+        damage_player();
+        break;
+      }
       if (entity_x[i] == entity_target_x[i] && entity_y[i] == entity_target_y[i]) {
         temp = entity_patrol_index[i];
         ++temp;
@@ -570,6 +594,10 @@ void dungeon_handler() {
 
   entities_handler();
   player_fire_handler();
+  if (player_lives == 0) {
+    go_to_game_over();
+    return;
+  }
 
   pad_poll(0);
   pad1 = pad_state(0);

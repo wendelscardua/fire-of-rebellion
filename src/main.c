@@ -8,24 +8,19 @@
 #include "mmc3/mmc3_code.h"
 #include "music/soundtrack.h"
 #include "charmap.h"
+#include "main.h"
 #include "irq_buffer.h"
 #include "nametable_loader.h"
 #include "temp.h"
 #include "wram.h"
 #include "dungeon.h"
+#include "game_over.h"
 #include "../assets/nametables.h"
 #include "../assets/palettes.h"
 #include "../assets/sprites.h"
 
 #define FP(integer,fraction) (((integer)<<8)|((fraction)>>0))
 #define INT(unsigned_fixed_point) ((unsigned_fixed_point>>8)&0xff)
-
-#define BG_MAIN_0 0
-#define BG_MAIN_1 1
-#define BG_MAIN_2 2
-#define BG_MAIN_3 3
-#define SPRITE_0 4
-#define SPRITE_1 6
 
 #pragma bss-name(push, "ZEROPAGE")
 
@@ -36,10 +31,7 @@ unsigned char gray_line_enabled;
 #endif
 
 // Game stuff
-enum game_state {
-                 Title,
-                 Main
-} current_game_state;
+game_state_t current_game_state;
 
 #pragma bss-name(pop)
 // should be in the regular 0x300 ram now
@@ -96,6 +88,8 @@ void main (void) {
     case Main:
       dungeon_handler();
       break;
+    case GameOver:
+      game_over_handler();
     }
 
 #ifdef DEBUG
