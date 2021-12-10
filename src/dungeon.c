@@ -25,6 +25,7 @@
 #define SPRITE_1 6
 
 #define ENERGY_RECOVERY_DELAY (60 * 8)
+#define INVI_DELAY (60 * 5)
 
 #define MAX_SPEED FP(0x01, 0x20)
 #define ACCELERATION FP(0x00, 0x20)
@@ -48,6 +49,7 @@ typedef struct
 
 unsigned char *current_room_ptr;
 unsigned char *up_room_ptr, *down_room_ptr, *left_room_ptr, *right_room_ptr;
+unsigned char hud_initialized;
 patrol_coordinates_t (*entity_patrol_points[MAX_ENTITIES])[];
 
 #pragma bss-name(pop)
@@ -59,6 +61,7 @@ signed int player_dx, player_dy;
 direction_t player_direction;
 unsigned char player_lives, player_energy;
 unsigned char has_fire, has_invi;
+unsigned int invi_timer;
 unsigned int energy_recovery_time;
 
 signed int last_spawn_x, last_spawn_y;
@@ -115,9 +118,11 @@ void init_dungeon () {
   player_energy = 0;
   has_fire = 0;
   has_invi = 0;
+  invi_timer = 0;
   shooting_cooldown = 0;
   energy_recovery_time = 0;
   current_dungeon_mode = Moving;
+  hud_initialized = 0;
   load_room((unsigned char*) starting_room);
 }
 
@@ -165,9 +170,13 @@ void load_room(unsigned char *room_ptr) {
   pal_spr(sprites_palette);
 
   // draw some things
-  vram_adr(NTADR_C(0,0));
-  vram_unrle(hud_nametable);
+  if (!hud_initialized) {
+    vram_adr(NTADR_C(0,0));
+    vram_unrle(hud_nametable);
+    hud_initialized = 1;
+  }
   vram_adr(NTADR_A(0,0));
+
 
   set_mt_pointer(metatiles);
   set_data_pointer(room_buffer);
@@ -354,6 +363,13 @@ void dungeon_moving_handler() {
       player_fire_active[i] = 1;
     }
   }
+  if (pad1_new & PAD_B) {
+    if (has_invi && player_energy >= 5 && invi_timer == 0) {
+      player_energy -= 5;
+      refresh_hud();
+      invi_timer = INVI_DELAY;
+    }
+  }
 
   player_x += player_dx;
   player_y += player_dy;
@@ -396,6 +412,8 @@ void dungeon_moving_handler() {
 
 unsigned char xm, ym;
 unsigned char unobstructed_line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2) {
+  if (invi_timer > 0) return 0;
+
   if (x1 > x2) {
     xm = x1;
     x1 = x2;
@@ -456,8 +474,8 @@ void entities_handler() {
       }
       break;
     case Patrol:
-      if (entity_x[i] >= player_x && entity_x[i] < player_x + FP(0x10, 00) &&
-          entity_y[i] >= player_y && entity_y[i] < player_y + FP(0x10, 00)) {
+      if (entity_x[i] + 8 >= player_x && entity_x[i] + 8 < player_x + FP(0x10, 00) &&
+          entity_y[i] + 8 >= player_y && entity_y[i] + 8 < player_y + FP(0x10, 00) && invi_timer == 0) {
         damage_player();
         break;
       }
@@ -623,6 +641,8 @@ void dungeon_handler() {
     }
   }
 
+  if (invi_timer > 0) --invi_timer;
+
   entities_handler();
   player_fire_handler();
   if (player_lives == 0) {
@@ -642,11 +662,14 @@ void dungeon_handler() {
 
 void dungeon_draw_sprites() {
   // render player
-  temp = 2 * player_direction;
-  if (player_dx != 0 || player_dy != 0) {
-    if ((INT(player_x) ^ INT(player_y)) & 0b01000) temp++;
+  if (invi_timer == 0 ||
+      (get_frame_count() & 0b11) == 0) {
+    temp = 2 * player_direction;
+    if (player_dx != 0 || player_dy != 0) {
+      if ((INT(player_x) ^ INT(player_y)) & 0b01000) temp++;
+    }
+    oam_meta_spr(INT(player_x), INT(player_y) - 1, (const unsigned char *) metasprites_pointers[temp]);
   }
-  oam_meta_spr(INT(player_x), INT(player_y) - 1, (const unsigned char *) metasprites_pointers[temp]);
 
   for(i = 0; i < num_entities; i++) {
     if (entity_lives[i] == 0) continue;
@@ -710,5 +733,14 @@ void unlock_dungeon() {
     buffer_4_mt(temp_int, (temp_y << 4) | temp_x);
   }
   has_fire = 1;
+  player_energy = 3;
+  refresh_hud();
   multi_vram_buffer_horz(fire_text, 9, NTADR_C(22, 1));
+}
+
+void unlock_invi() {
+  has_invi = 1;
+  player_energy = 5;
+  refresh_hud();
+  multi_vram_buffer_horz(invi_text, 9, NTADR_C(22, 2));
 }
