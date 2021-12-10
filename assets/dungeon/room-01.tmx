@@ -20,11 +20,11 @@
 2,2,2,4,2,2,2,1,1,2,2,2,2,4,2,2
 </data>
  </layer>
- <objectgroup id="2" name="entities">
-  <object id="1" name="Fire" type="Fire" x="120" y="180.667">
+ <objectgroup id="2" name="entities" offsetx="1" offsety="-6.75">
+  <object id="1" name="Fire" type="Fire" x="120" y="176.167">
    <point/>
   </object>
-  <object id="2" name="Fire" type="Fire" x="135.333" y="179.333">
+  <object id="2" name="Fire" type="Fire" x="133.583" y="171.833">
    <point/>
   </object>
  </objectgroup>

@@ -27,6 +27,48 @@
             "width": 256,
             "x": 256,
             "y": -192
+        },
+        {
+            "fileName": "room-05.tmx",
+            "height": 192,
+            "width": 256,
+            "x": 256,
+            "y": -384
+        },
+        {
+            "fileName": "room-06.tmx",
+            "height": 192,
+            "width": 256,
+            "x": 256,
+            "y": -576
+        },
+        {
+            "fileName": "room-07.tmx",
+            "height": 192,
+            "width": 256,
+            "x": 0,
+            "y": -384
+        },
+        {
+            "fileName": "room-08.tmx",
+            "height": 192,
+            "width": 256,
+            "x": 0,
+            "y": -576
+        },
+        {
+            "fileName": "room-09.tmx",
+            "height": 192,
+            "width": 256,
+            "x": -256,
+            "y": -384
+        },
+        {
+            "fileName": "room-10.tmx",
+            "height": 192,
+            "width": 256,
+            "x": -256,
+            "y": -576
         }
     ],
     "onlyShowAdjacentMaps": false,
