@@ -5,7 +5,7 @@
 #include "directions.h"
 #include "dungeon.h"
 #include "irq_buffer.h"
-#include "game_over.h"
+#include "ends_and_beginnings.h"
 #include "temp.h"
 #include "../assets/palettes.h"
 #include "../assets/nametables.h"

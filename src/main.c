@@ -14,7 +14,7 @@
 #include "temp.h"
 #include "wram.h"
 #include "dungeon.h"
-#include "game_over.h"
+#include "ends_and_beginnings.h"
 #include "../assets/nametables.h"
 #include "../assets/palettes.h"
 #include "../assets/sprites.h"

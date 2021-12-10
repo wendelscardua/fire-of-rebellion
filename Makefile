@@ -25,7 +25,7 @@ ${TARGET}: MMC3.cfg \
            src/temp.o \
            src/wram.o \
            src/dungeon.o \
-           src/game_over.o \
+           src/ends_and_beginnings.o \
            assets/nametables.o \
            assets/palettes.o \
            assets/sprites.o \
@@ -62,7 +62,7 @@ src/irq_buffer.s: src/irq_buffer.c
 src/temp.s: src/temp.c
 	cc65 -Oirs $< --add-source ${CA65_FLAGS}
 
-src/game_over.s: src/game_over.c src/game_over.h
+src/ends_and_beginnings.s: src/ends_and_beginnings.c src/ends_and_beginnings.h
 	cc65 -Oirs $< --add-source ${CA65_FLAGS}
 
 src/wram.s: src/wram.c \

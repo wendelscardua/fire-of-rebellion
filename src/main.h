@@ -3,6 +3,7 @@
 
 typedef enum {
               Title,
+              Prologue,
               Main,
               GameOver
 } game_state_t;
