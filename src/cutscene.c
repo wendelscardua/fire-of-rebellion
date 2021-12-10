@@ -11,6 +11,8 @@
 #include "../assets/sprites.h"
 #include "../assets/dialogs.h"
 
+#define NUM_CUTSCENES 1
+
 #define FIRST_DIALOG_COLUMN 5
 #define FIRST_DIALOG_ROW 7
 #define LAST_DIALOG_COLUMN 29
@@ -72,6 +74,12 @@ const int beginning_cutscene[] =
    DungeonUnlock,
    QuitCutscene
   };
+
+void reset_cutscenes() {
+  for(i = 0; i < NUM_CUTSCENES; i++) {
+    cutscene_checklist[i] = 0;
+  }
+}
 
 void init_cutscene(int * cutscene) {
   current_cutscene = cutscene;
@@ -180,10 +188,13 @@ void cutscene_handler() {
       current_speaker = *current_dialog;
       break;
     case DungeonUnlock:
-      // TODO - specific for first room
+      unlock_dungeon();
+      current_cutscene_command = NoCommand;
       break;
     case QuitCutscene:
       current_cutscene = 0;
+      current_dungeon_mode = Moving;
+      cutscene_checklist[checklist_index] = 1;
       break;
     }
     break;

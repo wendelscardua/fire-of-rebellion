@@ -90,12 +90,12 @@ const char empty_row[32] =
    0, 0, 0, 0, 0, 0, 0, 0
   };
 
-const unsigned char fire_text[9]=
+const char fire_text[9]=
   {
    0x26,0x4f,0x47,0x4f,0x00,0x1c,0x11,0x05,0x1e
   };
 
-const unsigned char invi_text[9]=
+const char invi_text[9]=
   {
    0x29,0x4e,0x56,0x49,0x00,0x1c,0x15,0x05,0x1e
   };
@@ -699,4 +699,16 @@ void dungeon_draw_sprites() {
     }
   }
   if (current_dungeon_mode == Cutscene) draw_cutscene_sprites();
+}
+
+void unlock_dungeon() {
+  room_buffer[0x83] = 0;
+  room_buffer[0x84] = 0;
+  for(temp_x = 3; temp_x <= 4; temp_x++) {
+    temp_y = 8;
+    temp_int = 0x2000 + 2 * temp_x + 0x40 * temp_y;
+    buffer_4_mt(temp_int, (temp_y << 4) | temp_x);
+  }
+  has_fire = 1;
+  multi_vram_buffer_horz(fire_text, 9, NTADR_C(22, 1));
 }
