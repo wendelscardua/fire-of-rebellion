@@ -26,7 +26,7 @@
 #define SPRITE_0 4
 #define SPRITE_1 6
 
-#define ENERGY_RECOVERY_DELAY (60 * 8)
+#define ENERGY_RECOVERY_DELAY (60 * 4)
 #define INVI_DELAY (60 * 5)
 
 #define MAX_SPEED FP(0x01, 0x20)
