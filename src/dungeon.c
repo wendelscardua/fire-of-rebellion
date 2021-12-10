@@ -252,10 +252,10 @@ unsigned char point_room_collision(unsigned char x, unsigned char y) {
 }
 
 unsigned char player_room_collision(unsigned char x, unsigned char y) {
-  return point_room_collision(x, y + 8) ||
-    point_room_collision(x + 15, y + 8) ||
-    point_room_collision(x, y + 15) ||
-    point_room_collision(x + 15, y + 15);
+  return point_room_collision(x + 1, y + 8) ||
+    point_room_collision(x + 14, y + 8) ||
+    point_room_collision(x + 1, y + 15) ||
+    point_room_collision(x + 14, y + 15);
 }
 
 void victory() {
