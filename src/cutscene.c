@@ -13,7 +13,7 @@
 #include "../assets/sprites.h"
 #include "../assets/dialogs.h"
 
-#define NUM_CUTSCENES 1
+#define NUM_CUTSCENES 2
 
 #define FIRST_DIALOG_COLUMN 5
 #define FIRST_DIALOG_ROW 7
