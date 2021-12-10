@@ -2,6 +2,7 @@
 #include "lib/neslib.h"
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
+#include "music/soundtrack.h"
 #include "cutscene.h"
 #include "directions.h"
 #include "dungeon.h"
@@ -124,6 +125,7 @@ void init_dungeon () {
   current_dungeon_mode = Moving;
   hud_initialized = 0;
   load_room((unsigned char*) starting_room);
+  music_play(RPGBattleTheme);
 }
 
 void load_room(unsigned char *room_ptr) {

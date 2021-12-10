@@ -1,6 +1,7 @@
 #include "lib/nesdoug.h"
 #include "lib/neslib.h"
 #include "lib/unrle.h"
+#include "music/soundtrack.h"
 #include "mmc3/mmc3_code.h"
 #include "irq_buffer.h"
 #include "main.h"
@@ -60,16 +61,19 @@ void start_text_wall(unsigned char * nametable) {
 void go_to_bad_ending() {
   current_game_state = GameOver;
   start_text_wall(bad_ending_nametable);
+  music_play(Cave);
 }
 
 void go_to_good_ending() {
   current_game_state = GameOver;
   start_text_wall(good_ending_nametable);
+  music_play(VictoryLoop);
 }
 
 void go_to_prologue() {
   current_game_state = Prologue;
   start_text_wall(prologue_nametable);
+  music_play(Cave);
 }
 
 #define DELAY 2
