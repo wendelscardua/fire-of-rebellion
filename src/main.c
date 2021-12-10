@@ -7,6 +7,7 @@
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
 #include "music/soundtrack.h"
+#include "music/soundfx.h"
 #include "charmap.h"
 #include "cutscene.h"
 #include "main.h"
@@ -184,7 +185,7 @@ void title_handler() {
     rand16();
     pad1_new = get_pad_new(0);
     if (pad1_new & (PAD_START | PAD_A)) {
-      //sfx_play(SFX_START, 0);
+      sfx_play(SFXStart, 0);
       go_to_prologue();
       break;
     }
