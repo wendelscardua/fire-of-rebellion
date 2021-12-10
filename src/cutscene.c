@@ -13,7 +13,7 @@
 #include "../assets/sprites.h"
 #include "../assets/dialogs.h"
 
-#define NUM_CUTSCENES 2
+#define NUM_CUTSCENES 3
 
 #define FIRST_DIALOG_COLUMN 5
 #define FIRST_DIALOG_ROW 7
@@ -91,6 +91,14 @@ const int helping_cutscene[] =
    YesNoPrompt,
    StartDialog, (int) dialog_helping,
    InviUnlock,
+   QuitCutscene
+  };
+
+const int invi_would_help_cutscene[] =
+  {
+   2,
+   0x70, 0x90, 0x78, 0xa0,
+   StartDialog, (int) dialog_invi_would_help,
    QuitCutscene
   };
 
