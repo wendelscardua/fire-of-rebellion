@@ -233,6 +233,7 @@ unsigned char player_room_collision(unsigned char x, unsigned char y) {
 
 void victory() {
   // player escaped dungeon, show victory screen
+  go_to_good_ending();
 }
 
 unsigned char exiting_room() {
