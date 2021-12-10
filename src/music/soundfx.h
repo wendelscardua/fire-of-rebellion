@@ -3,7 +3,9 @@
 
 typedef enum
   {
-   SFXStart
+   SFXStart,
+   SFXAchieved,
+   SFXHit
   } sfx_t;
 
 #endif

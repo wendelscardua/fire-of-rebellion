@@ -3,6 +3,7 @@
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
 #include "music/soundtrack.h"
+#include "music/soundfx.h"
 #include "cutscene.h"
 #include "directions.h"
 #include "dungeon.h"
@@ -236,6 +237,7 @@ void refresh_hud() {
 }
 
 void damage_player() {
+  sfx_play(SFXHit, 0);
   --player_lives;
   refresh_hud();
   player_x = last_spawn_x;
@@ -363,6 +365,7 @@ void dungeon_moving_handler() {
       }
       player_fire_direction[i] = player_direction;
       player_fire_active[i] = 1;
+      sfx_play(SFXHit, 0);
     }
   }
   if (pad1_new & PAD_B) {
@@ -538,7 +541,7 @@ void entities_handler() {
           num_entities < MAX_ENTITIES &&
           ((get_frame_count() + i) & 0b011) == 0 &&
           unobstructed_line(INT(player_x) + 8, INT(player_y) + 4, INT(entity_x[i]) + 8, INT(entity_y[i]) + 4)) {
-        shooting_cooldown = 24;
+        shooting_cooldown = 32;
         for(temp = 0; temp < num_entities; temp++) {
           if (entity_lives[temp] == 0) break;
         }
@@ -577,6 +580,9 @@ void entities_handler() {
           entity_dy[temp] = 0;
           break;
         }
+
+        sfx_play(SFXHit, 0);
+
         break;
       }
     }
@@ -745,4 +751,5 @@ void unlock_invi() {
   player_energy = 5;
   refresh_hud();
   multi_vram_buffer_horz(invi_text, 9, NTADR_C(22, 2));
+  sfx_play(SFXAchieved, 0);
 }

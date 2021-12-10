@@ -47,4 +47,4 @@ $ make run
 
 ### Public domain content
 * Music: Ted Karr
-* SFX: Shiru
+* SFX: Shiru, Baŝto
