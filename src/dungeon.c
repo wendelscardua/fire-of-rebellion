@@ -2,6 +2,7 @@
 #include "lib/neslib.h"
 #include "lib/unrle.h"
 #include "mmc3/mmc3_code.h"
+#include "cutscene.h"
 #include "directions.h"
 #include "dungeon.h"
 #include "irq_buffer.h"
@@ -130,6 +131,8 @@ void load_room(unsigned char *room_ptr) {
   left_room_ptr = *(unsigned char **) room_ptr;
   room_ptr += 2;
   right_room_ptr = *(unsigned char **) room_ptr;
+  room_ptr += 2;
+  init_cutscene(*(int **) room_ptr);
   room_ptr += 2;
 
   num_entities = *room_ptr; ++room_ptr;
