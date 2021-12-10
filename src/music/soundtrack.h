@@ -4,7 +4,8 @@
 typedef enum
   {
    RPGBattleTheme,
-   VictoryLoop
+   VictoryLoop,
+   Cave
   } music_t;
 
 #endif
