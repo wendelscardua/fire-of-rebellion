@@ -685,6 +685,8 @@ void dungeon_draw_sprites() {
     oam_meta_spr(INT(player_x), INT(player_y) - 1, (const unsigned char *) metasprites_pointers[temp]);
   }
 
+  if (current_dungeon_mode == Cutscene) draw_cutscene_sprites();
+
   for(i = 0; i < num_entities; i++) {
     if (entity_lives[i] == 0) continue;
     switch(entity_type[i]) {
@@ -735,7 +737,6 @@ void dungeon_draw_sprites() {
       }
     }
   }
-  if (current_dungeon_mode == Cutscene) draw_cutscene_sprites();
 }
 
 void unlock_dungeon() {
