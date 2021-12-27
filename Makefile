@@ -20,6 +20,7 @@ debug: ${TARGET}
 ${TARGET}: MMC3.cfg \
            src/main.o src/crt0.o \
            src/lib/unrle.o src/lib/subrand.o src/lib/farcall.o \
+           src/trig/trig.o \
            src/nametable_loader.o \
            src/irq_buffer.o \
            src/temp.o \

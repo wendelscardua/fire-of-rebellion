@@ -434,6 +434,27 @@ void dungeon_moving_handler() {
   check_trigger();
 }
 
+#include "trig/trig.h"
+#define FOV 16
+unsigned char line_of_sight(unsigned char entity_index) {
+  atan2_x2 = INT(player_x) + 8;
+  atan2_x1 = INT(entity_x[entity_index]) + 8;
+  atan2_y2 = INT(player_y) + 4;
+  atan2_y1 = INT(entity_y[entity_index]) + 4;
+
+  temp = atan2();
+  switch(entity_direction[entity_index]) {
+  case Up:
+    return temp > 192 - FOV && temp < 192 + FOV;
+  case Down:
+    return temp > 64 - FOV && temp < 64 + FOV;
+  case Left:
+    return temp > 128 - FOV && temp < 128 + FOV;
+  case Right:
+    return temp > 256 - FOV || temp < FOV;
+  }
+}
+
 unsigned char xm, ym;
 unsigned char unobstructed_line(unsigned char x1, unsigned char y1, unsigned char x2, unsigned char y2) {
   if (invi_timer > 0) return 0;
@@ -559,6 +580,7 @@ void entities_handler() {
       if (shooting_cooldown == 0 &&
           num_entities < MAX_ENTITIES &&
           ((get_frame_count() + i) & 0b011) == 0 &&
+          line_of_sight(i) &&
           unobstructed_line(INT(player_x) + 8, INT(player_y) + 4, INT(entity_x[i]) + 8, INT(entity_y[i]) + 4)) {
         shooting_cooldown = 32;
         for(temp = 0; temp < num_entities; temp++) {
